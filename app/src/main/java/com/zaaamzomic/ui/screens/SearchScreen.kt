@@ -90,7 +90,6 @@ fun SearchScreen(container: AppContainer, onMangaClick: (String) -> Unit) {
     Scaffold(containerColor = PaperIvory) { pad ->
         Column(Modifier.padding(pad).fillMaxSize().background(PaperIvory).padding(horizontal = 16.dp)) {
             Spacer(Modifier.height(12.dp))
-            // search field with Hanko border like mockup
             OutlinedTextField(
                 value = q,
                 onValueChange = vm::onQueryChange,
@@ -121,8 +120,7 @@ fun SearchScreen(container: AppContainer, onMangaClick: (String) -> Unit) {
                                     AssistChip(
                                         onClick = { vm.onQueryChange(r) },
                                         label = { Text(r, fontSize = 12.sp) },
-                                        colors = AssistChipDefaults.assistChipColors(containerColor = Color.White, labelColor = Sumi),
-                                        border = AssistChipDefaults.assistChipBorder(borderColor = Outline)
+                                        colors = AssistChipDefaults.assistChipColors(containerColor = Color.White, labelColor = Sumi)
                                     )
                                 }
                             }
@@ -135,13 +133,11 @@ fun SearchScreen(container: AppContainer, onMangaClick: (String) -> Unit) {
                                     AssistChip(
                                         onClick = { vm.onQueryChange(kw.lowercase()) },
                                         label = { Text(kw, fontSize = 12.sp) },
-                                        colors = AssistChipDefaults.assistChipColors(containerColor = Color.White, labelColor = Sumi),
-                                        border = AssistChipDefaults.assistChipBorder(borderColor = Outline)
+                                        colors = AssistChipDefaults.assistChipColors(containerColor = Color.White, labelColor = Sumi)
                                     )
                                 }
                             }
                         }
-                        // empty illustration mimicking mockup
                         Column(
                             modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(SpineMist).padding(32.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
@@ -168,13 +164,13 @@ fun SearchScreen(container: AppContainer, onMangaClick: (String) -> Unit) {
                         Spacer(Modifier.height(6.dp))
                         Text("Coba “One Piece” atau “Solo Leveling”", fontSize = 12.sp, color = GalleyGrey)
                         Spacer(Modifier.height(16.dp))
-                        OutlinedButton(onClick = { vm.onQueryChange("one piece") }, border = androidx.compose.foundation.BorderStroke(1.dp, Outline)) { Text("Coba “One Piece”", color = Sumi) }
+                        OutlinedButton(onClick = { vm.onQueryChange("one piece") }) { Text("Coba “One Piece”", color = Sumi) }
                     }
                 }
                 else -> {
                     Column {
                         Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text("Hasil untuk “$q”", fontSize = 11.sp, letterSpacing = 0.8.sp, fontWeight = FontWeight.Bold, color = GalleyGrey, textTransform = androidx.compose.ui.text.style.TextTransform.Uppercase)
+                            Text("Hasil untuk “$q”".uppercase(), fontSize = 11.sp, letterSpacing = 0.8.sp, fontWeight = FontWeight.Bold, color = GalleyGrey)
                             Text("${results.size} ditemukan", fontFamily = FontFamily.Monospace, fontSize = 11.sp, color = GalleyGrey)
                         }
                         LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxSize()) {

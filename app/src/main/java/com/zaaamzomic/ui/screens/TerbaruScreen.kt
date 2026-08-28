@@ -110,12 +110,6 @@ fun TerbaruScreen(
                             selectedLabelColor = PaperIvory,
                             containerColor = PaperIvory,
                             labelColor = Sumi
-                        ),
-                        border = FilterChipDefaults.filterChipBorder(
-                            borderColor = if (active) Hanko else Outline,
-                            selectedBorderColor = Hanko,
-                            enabled = true,
-                            selected = active
                         )
                     )
                 }
@@ -123,8 +117,7 @@ fun TerbaruScreen(
                 AssistChip(
                     onClick = {},
                     label = { Text("Filter", fontSize = 12.sp) },
-                    colors = AssistChipDefaults.assistChipColors(containerColor = PaperIvory, labelColor = Sumi),
-                    border = AssistChipDefaults.assistChipBorder(borderColor = Outline)
+                    colors = AssistChipDefaults.assistChipColors(containerColor = PaperIvory, labelColor = Sumi)
                 )
             }
             HorizontalDivider(color = Outline, thickness = 1.dp)

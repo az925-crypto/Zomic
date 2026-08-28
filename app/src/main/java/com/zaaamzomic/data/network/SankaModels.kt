@@ -39,8 +39,7 @@ data class TerbaruComicDto(
     @SerialName("time_ago") val timeAgo: String? = null,
 ) {
     fun toSummary(): MangaSummaryDto {
-        val s = if (slugFromLink != null) slugFromLink else extractSlug(link)
-        // link like /manga/the-dragon-of-kunlun/
+        val s = extractSlug(link)
         return MangaSummaryDto(
             title = title,
             slug = s,
@@ -51,8 +50,6 @@ data class TerbaruComicDto(
             description = listOfNotNull(chapter, timeAgo).joinToString(" • "),
         )
     }
-    // allow explicit slug if API ever returns it
-    private val slugFromLink: String? get() = link?.let { extractSlug(it) }
 }
 
 @Serializable

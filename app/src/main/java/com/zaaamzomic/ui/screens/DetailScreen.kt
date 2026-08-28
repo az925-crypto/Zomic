@@ -187,23 +187,27 @@ fun DetailScreen(
                                         Text("— — — ● — — —", fontFamily = FontFamily.Monospace, fontSize = 11.sp, color = Hanko)
                                     }
                                     Box(Modifier.fillMaxWidth().height(4.dp).clip(RoundedCornerShape(999.dp)).background(SpineMist2)) {
-                                        val progPct = if (prog?.totalPagesInChapter != null && prog?.totalPagesInChapter!! > 0) (prog.lastReadPageIndex + 1).toFloat() / prog.totalPagesInChapter else 0.62f
+                                        val p = prog
+                                        val progPct = if (p?.totalPagesInChapter != null && p.totalPagesInChapter > 0) (p.lastReadPageIndex + 1).toFloat() / p.totalPagesInChapter else 0.62f
                                         Box(Modifier.fillMaxHeight().fillMaxWidth(progPct).background(if (isTamat) OkGreen else Hanko))
                                     }
                                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                                        Text(prog?.let { "Terakhir: ${it.lastReadChapterSlug} • P.${it.lastReadPageIndex}" } ?: "Belum ada progress", fontFamily = FontFamily.Monospace, fontSize = 11.sp, color = GalleyGrey)
+                                        val p = prog
+                                        Text(p?.let { "Terakhir: ${it.lastReadChapterSlug} • P.${it.lastReadPageIndex}" } ?: "Belum ada progress", fontFamily = FontFamily.Monospace, fontSize = 11.sp, color = GalleyGrey)
                                         Text(if (isTamat) "92%" else "62%", fontFamily = FontFamily.Monospace, fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Sumi)
                                     }
                                     Button(
                                         onClick = {
-                                            val last = prog?.lastReadChapterSlug
+                                            val p = prog
+                                            val last = p?.lastReadChapterSlug
                                             if (last != null) onChapterClick(last) else if (vm.chapters.isNotEmpty()) onChapterClick(vm.chapters.first().effectiveSlug)
                                         },
                                         modifier = Modifier.fillMaxWidth(),
                                         colors = ButtonDefaults.buttonColors(containerColor = if (isTamat) OkGreen else Hanko),
                                         shape = RoundedCornerShape(10.dp)
                                     ) {
-                                        Text(if (prog?.lastReadChapterSlug != null) "Lanjut Baca ${prog.lastReadChapterSlug}" else "Mulai Baca Ch. 1", color = Color.White, fontWeight = FontWeight.Bold)
+                                        val p = prog
+                                        Text(if (p?.lastReadChapterSlug != null) "Lanjut Baca ${p.lastReadChapterSlug}" else "Mulai Baca Ch. 1", color = Color.White, fontWeight = FontWeight.Bold)
                                     }
                                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                         OutlinedButton(onClick = { vm.showBookmark = true }, modifier = Modifier.weight(1f), border = androidx.compose.foundation.BorderStroke(1.dp, Outline)) { Text("Bookmark", color = Sumi) }
@@ -219,7 +223,7 @@ fun DetailScreen(
                             }
                             Spacer(Modifier.height(12.dp))
                             // unavailable banner
-                            if (prog?.isSourceUnavailable == true) {
+                            if (prog.let { it?.isSourceUnavailable == true }) {
                                 Card(
                                     modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
                                     colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF4E5)),

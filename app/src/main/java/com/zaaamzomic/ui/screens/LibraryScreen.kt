@@ -71,44 +71,38 @@ fun LibraryScreen(
                     selected = readingFilter == null,
                     onClick = { readingFilter = null },
                     label = { Text("Semua", fontSize = 12.sp) },
-                    colors = FilterChipDefaults.filterChipColors(selectedContainerColor = Hanko, selectedLabelColor = PaperIvory, containerColor = PaperIvory),
-                    border = FilterChipDefaults.filterChipBorder(borderColor = Outline, selectedBorderColor = Hanko, enabled = true, selected = readingFilter == null)
+                    colors = FilterChipDefaults.filterChipColors(selectedContainerColor = Hanko, selectedLabelColor = PaperIvory, containerColor = PaperIvory)
                 )
                 FilterChip(
                     selected = readingFilter == ReadingStatus.SEDANG_DIBACA,
                     onClick = { readingFilter = if (readingFilter == ReadingStatus.SEDANG_DIBACA) null else ReadingStatus.SEDANG_DIBACA },
                     label = { Text("Sedang Dibaca • $sedangCount", fontSize = 12.sp) },
-                    colors = FilterChipDefaults.filterChipColors(selectedContainerColor = Hanko, selectedLabelColor = PaperIvory, containerColor = PaperIvory),
-                    border = FilterChipDefaults.filterChipBorder(borderColor = Outline, selectedBorderColor = Hanko, enabled = true, selected = readingFilter == ReadingStatus.SEDANG_DIBACA)
+                    colors = FilterChipDefaults.filterChipColors(selectedContainerColor = Hanko, selectedLabelColor = PaperIvory, containerColor = PaperIvory)
                 )
                 FilterChip(
                     selected = readingFilter == ReadingStatus.BELUM_DIBACA,
                     onClick = { readingFilter = if (readingFilter == ReadingStatus.BELUM_DIBACA) null else ReadingStatus.BELUM_DIBACA },
                     label = { Text("Belum Dibaca • $belumCount", fontSize = 12.sp) },
-                    colors = FilterChipDefaults.filterChipColors(selectedContainerColor = Hanko, selectedLabelColor = PaperIvory, containerColor = PaperIvory),
-                    border = FilterChipDefaults.filterChipBorder(borderColor = Outline, selectedBorderColor = Hanko, enabled = true, selected = readingFilter == ReadingStatus.BELUM_DIBACA)
+                    colors = FilterChipDefaults.filterChipColors(selectedContainerColor = Hanko, selectedLabelColor = PaperIvory, containerColor = PaperIvory)
                 )
                 FilterChip(
                     selected = readingFilter == ReadingStatus.DROPPED,
                     onClick = { readingFilter = if (readingFilter == ReadingStatus.DROPPED) null else ReadingStatus.DROPPED },
                     label = { Text("Dropped • $droppedCount", fontSize = 12.sp) },
-                    colors = FilterChipDefaults.filterChipColors(selectedContainerColor = Hanko, selectedLabelColor = PaperIvory, containerColor = PaperIvory),
-                    border = FilterChipDefaults.filterChipBorder(borderColor = Outline, selectedBorderColor = Hanko, enabled = true, selected = readingFilter == ReadingStatus.DROPPED)
+                    colors = FilterChipDefaults.filterChipColors(selectedContainerColor = Hanko, selectedLabelColor = PaperIvory, containerColor = PaperIvory)
                 )
                 Box(Modifier.width(1.dp).height(16.dp).background(Outline))
                 FilterChip(
                     selected = pubFilter == PublicationStatus.TAMAT,
                     onClick = { pubFilter = if (pubFilter == PublicationStatus.TAMAT) null else PublicationStatus.TAMAT },
                     label = { Text("Tamat", fontSize = 12.sp) },
-                    colors = FilterChipDefaults.filterChipColors(selectedContainerColor = Hanko, selectedLabelColor = PaperIvory, containerColor = PaperIvory),
-                    border = FilterChipDefaults.filterChipBorder(borderColor = Outline, selectedBorderColor = Hanko, enabled = true, selected = pubFilter == PublicationStatus.TAMAT)
+                    colors = FilterChipDefaults.filterChipColors(selectedContainerColor = Hanko, selectedLabelColor = PaperIvory, containerColor = PaperIvory)
                 )
                 FilterChip(
                     selected = pubFilter == PublicationStatus.BELUM_TAMAT,
                     onClick = { pubFilter = if (pubFilter == PublicationStatus.BELUM_TAMAT) null else PublicationStatus.BELUM_TAMAT },
                     label = { Text("Belum Tamat", fontSize = 12.sp) },
-                    colors = FilterChipDefaults.filterChipColors(selectedContainerColor = Hanko, selectedLabelColor = PaperIvory, containerColor = PaperIvory),
-                    border = FilterChipDefaults.filterChipBorder(borderColor = Outline, selectedBorderColor = Hanko, enabled = true, selected = pubFilter == PublicationStatus.BELUM_TAMAT)
+                    colors = FilterChipDefaults.filterChipColors(selectedContainerColor = Hanko, selectedLabelColor = PaperIvory, containerColor = PaperIvory)
                 )
             }
             HorizontalDivider(color = Outline)
