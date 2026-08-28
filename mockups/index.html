@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ZOMIC — Manga Reader • Mockup Full App (PRD v1)</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700;9..144,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+:root{
+  --paper:#F6F1E7; --mist:#E8E0CF; --mist2:#DDD6C3; --sumi:#0F1720; --sumi2:#1E2935;
+  --grey:#8B919A; --grey2:#A8AFB8; --hanko:#E84C2A; --hanko2:#FF6B4A; --hanko-bg:#FFDBD1;
+  --ok:#1A7A4C; --outline:#C8C0AD; --outline2:#3A4553; --card:#E8E0CF;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:#0F1720;color:#F6F1E7;font-family:'Plus Jakarta Sans',system-ui,sans-serif;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+.mono{font-family:'JetBrains Mono',monospace}
+.fraunces{font-family:'Fraunces',serif}
+
+/* top banner */
+.topbar{position:sticky;top:0;z-index:40;background:rgba(15,23,32,0.9);backdrop-filter:blur(12px);border-bottom:1px solid #1E2935;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;gap:16px}
+.topbar h1{font-family:'Fraunces',serif;font-weight:800;font-size:22px;letter-spacing:0.06em}
+.topbar h1 span{color:var(--hanko2)}
+.topbar p{font-size:12px;color:var(--grey2);max-width:560px;line-height:1.5}
+.badge-prd{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.12em;background:var(--hanko);color:white;padding:6px 10px;border-radius:999px}
+.hero{padding:22px 20px 8px;max-width:1600px;margin:0 auto;display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.hero h2{font-family:'Fraunces',serif;font-size:28px;line-height:1}
+.hero .hint{font-size:13px;color:var(--grey2);background:#1E2935;border:1px solid #2A3441;padding:10px 12px;border-radius:10px}
+.pills{display:flex;gap:8px;flex-wrap:wrap}
+.pill{font-size:11px;letter-spacing:0.08em;text-transform:uppercase;font-weight:600;padding:8px 12px;border-radius:999px;border:1px solid #2A3441;background:#1E2935;color:var(--grey2)}
+.pill.active{background:var(--hanko);border-color:var(--hanko);color:white}
+
+/* gallery */
+.gallery{max-width:1600px;margin:0 auto;padding:18px;display:grid;grid-template-columns:repeat(auto-fill,minmax(392px,1fr));gap:22px;justify-content:center}
+@media(max-width:420px){.gallery{grid-template-columns:1fr}}
+.frame-label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--grey2);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.frame-label i{width:14px;height:14px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--hanko);display:inline-block;flex:0 0 8px}
+.dot.grey{background:var(--grey)}
+.dot.ok{background:var(--ok)}
+
+/* phone */
+.phone{width:392px;max-width:100%;height:812px;background:var(--paper);color:var(--sumi);border-radius:28px;overflow:hidden;position:relative;border:1px solid #0F1720;box-shadow:0 24px 48px rgba(0,0,0,0.45),0 2px 12px rgba(0,0,0,0.3);display:flex;flex-direction:column}
+.phone.dark{background:var(--sumi);color:var(--paper)}
+.phone-header{height:24px;background:#000;display:flex;justify-content:center;align-items:center;color:white;font-size:11px;gap:8px;flex-shrink:0}
+.phone-header span{opacity:0.8}
+.appbar{height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid var(--outline);flex-shrink:0;background:inherit;position:relative;z-index:2}
+.appbar.dark{border-bottom-color:#1E2935;background:var(--sumi)}
+.wordmark{font-family:'Fraunces',serif;font-weight:800;font-size:18px;letter-spacing:0.08em;line-height:1}
+.wordmark small{display:block;font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:0.18em;font-weight:500;color:var(--grey);margin-top:1px}
+.appbar-actions{display:flex;gap:8px}
+.icon-btn{width:36px;height:36px;border-radius:10px;border:1px solid var(--outline);display:grid;place-items:center;background:transparent;cursor:pointer;color:var(--sumi)}
+.icon-btn.dark{border-color:#2A3441;color:var(--paper)}
+.icon-btn.filled{background:var(--hanko);border-color:var(--hanko);color:white}
+.bottom-nav{height:72px;background:var(--mist);border-top:1px solid var(--outline);display:flex;align-items:center;justify-content:space-around;padding:8px 12px;flex-shrink:0;border-radius:20px 20px 0 0;margin:0 12px 0 12px;position:absolute;left:0;right:0;bottom:0;box-shadow:0 -8px 24px rgba(0,0,0,0.08)}
+.bottom-nav.dark{background:#1E2935;border-color:#2A3441}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;font-weight:600;color:var(--grey);cursor:pointer;padding:6px 14px;border-radius:999px;transition:all .2s}
+.nav-item.active{background:var(--hanko-bg);color:var(--sumi);border:1px solid var(--hanko)}
+.nav-item.active.dark{background:#5C1A0A;color:var(--paper);border-color:var(--hanko2)}
+.nav-item i{width:20px;height:20px}
+.phone-scroll{flex:1;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;padding-bottom:88px}
+.phone-scroll.no-nav{padding-bottom:0}
+.filter-row{display:flex;gap:8px;padding:10px 16px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--outline);background:inherit;position:sticky;top:0;z-index:3}
+.filter-row::-webkit-scrollbar{display:none}
+.chip{height:32px;padding:0 14px;border-radius:999px;border:1px solid var(--outline);background:transparent;font-size:12px;font-weight:600;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;cursor:pointer;flex-shrink:0;color:var(--sumi)}
+.chip.active{background:var(--hanko);border-color:var(--hanko);color:white}
+.chip.dark{border-color:#2A3441;color:var(--paper)}
+.chip.active.dark{background:var(--hanko2);border-color:var(--hanko2)}
+.divider-v{width:1px;height:16px;background:var(--outline);flex-shrink:0;align-self:center}
+
+/* cards */
+.card{margin:12px 16px 0;background:var(--mist);border:1px solid var(--outline);border-radius:12px;display:flex;gap:12px;padding:12px;position:relative;overflow:hidden}
+.card.dark{background:#1E2935;border-color:#2A3441}
+.card.selected{border-color:var(--hanko);box-shadow:0 1px 8px rgba(232,76,42,0.18)}
+.spine{width:4px;border-radius:999px;flex-shrink:0;align-self:stretch;position:relative}
+.spine.red{background:var(--hanko)}
+.spine.grey{background:var(--grey)}
+.spine.dropped{background:repeating-linear-gradient(45deg,var(--grey) 0 4px,transparent 4px 8px);opacity:0.7}
+.spine-dot{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:6px;height:6px;border-radius:50%;background:var(--ok);border:1.5px solid white;box-shadow:0 0 0 1px var(--ok)}
+.spine-dot.outline{background:white;border-color:var(--grey)}
+.cover{width:64px;height:84px;border-radius:8px;object-fit:cover;flex-shrink:0;background:#DDD6C3;position:relative;overflow:hidden;display:block}
+.cover-wrap{position:relative;flex-shrink:0}
+.badge-cover{position:absolute;top:6px;right:6px;background:rgba(246,241,231,0.92);backdrop-filter:blur(4px);padding:3px 6px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:0.08em;display:flex;align-items:center;gap:4px;border:1px solid rgba(0,0,0,0.06)}
+.badge-cover.tamat{color:var(--ok)}
+.badge-cover.ongoing{color:var(--grey)}
+.card-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.card-title{font-weight:700;font-size:14px;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card-meta{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--grey);letter-spacing:0.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-desc{font-size:12px;line-height:1.4;color:#3a3a3a;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.phone.dark .card-desc{color:#A8AFB8}
+.progress{height:3px;background:#DDD6C3;border-radius:999px;overflow:hidden;margin-top:6px}
+.progress.dark{background:#2A3441}
+.progress-fill{height:100%;background:var(--hanko);border-radius:999px}
+.card-cta{margin-top:6px;font-size:11px;font-weight:700;color:var(--hanko);display:flex;align-items:center;gap:4px;cursor:pointer}
+.card-cta i{width:14px;height:14px}
+
+/* detail */
+.detail-hero{height:300px;position:relative;overflow:hidden;background:#0F1720;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:18px;text-align:center;color:white}
+.detail-hero::before{content:"";position:absolute;inset:0;background:radial-gradient(600px 300px at 50% 0%, rgba(232,76,42,0.18), transparent 60%), linear-gradient(to top, rgba(15,23,32,0.92) 30%, rgba(15,23,32,0.2) 100%)}
+.detail-hero > *{position:relative;z-index:1}
+.detail-cover{width:120px;height:160px;border-radius:10px;object-fit:cover;border:2px solid rgba(255,255,255,0.15);box-shadow:0 12px 32px rgba(0,0,0,0.4)}
+.detail-title{font-family:'Fraunces',serif;font-weight:800;font-size:22px;line-height:1.1;margin-top:12px}
+.detail-meta{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.06em;opacity:0.85;margin-top:6px;display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap}
+.ledger{margin:14px 16px;background:var(--mist);border:1px solid var(--outline);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.ledger.dark{background:#1E2935;border-color:#2A3441}
+.ledger-bar{height:4px;background:#DDD6C3;border-radius:999px;overflow:hidden;position:relative}
+.ledger-bar.dark{background:#2A3441}
+.ledger-fill{height:100%;background:var(--hanko)}
+.ledger-row{display:flex;justify-content:space-between;align-items:center}
+.ledger-text{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--grey)}
+.btn-hanko{height:44px;background:var(--hanko);color:white;border:none;border-radius:10px;padding:0 18px;font-weight:700;font-size:13px;display:inline-flex;align-items:center;gap:8px;cursor:pointer;justify-content:center;width:100%}
+.btn-hanko:active{transform:scale(0.98)}
+.btn-ghost{height:44px;background:transparent;border:1px solid var(--outline);border-radius:10px;padding:0 18px;font-weight:600;font-size:13px;display:inline-flex;align-items:center;gap:8px;cursor:pointer;justify-content:center;width:100%}
+.synopsis{margin:12px 16px;font-size:13px;line-height:1.6;color:#2b2b2b}
+.phone.dark .synopsis{color:#C8C0AD}
+.chapter-item{height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid var(--outline);cursor:pointer}
+.chapter-item:hover{background:rgba(232,76,42,0.04)}
+.chapter-item.dark{border-color:#1E2935}
+.chapter-item.dark:hover{background:rgba(255,107,74,0.06)}
+.chapter-left{display:flex;flex-direction:column;gap:2px}
+.chapter-num{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700}
+.chapter-date{font-size:11px;color:var(--grey)}
+.read-dot{width:8px;height:8px;border-radius:50%;background:var(--hanko)}
+.read-dot.done{background:var(--ok)}
+.read-dot.none{background:transparent;border:1.5px solid #DDD6C3}
+
+/* reader */
+.reader-bg{background:#0F1720;height:100%;display:flex;flex-direction:column}
+.reader-overlay{height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 12px;color:white;border-bottom:1px solid rgba(255,255,255,0.08);flex-shrink:0}
+.reader-pages{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:12px}
+.reader-page{background:#1E2935;border-radius:8px;overflow:hidden;position:relative;aspect-ratio:3/4.2;display:grid;place-items:center;color:#5a6470;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.08em;border:1px solid #2A3441}
+.reader-page img{width:100%;height:100%;object-fit:cover;display:block}
+.gutter{height:1px;border-top:1px dashed rgba(255,255,255,0.12);margin:4px 24px}
+.scrub{height:64px;border-top:1px solid rgba(255,255,255,0.08);padding:10px 16px;display:flex;flex-direction:column;gap:8px;color:white;flex-shrink:0}
+.scrub-track{height:2px;background:#2A3441;border-radius:999px;overflow:hidden;position:relative}
+.scrub-fill{height:100%;background:var(--hanko2);width:22%}
+.scrub-row{display:flex;justify-content:space-between;align-items:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--grey2)}
+.scrub-btn{font-size:12px;font-weight:700;color:var(--hanko2);background:none;border:none;cursor:pointer}
+
+/* search */
+.search-field{margin:12px 16px;height:48px;border-radius:12px;border:1.5px solid var(--hanko);background:white;display:flex;align-items:center;gap:10px;padding:0 12px}
+.search-field input{flex:1;border:none;outline:none;font-size:14px;font-weight:500;background:transparent}
+.search-field input::placeholder{color:var(--grey)}
+.recent{padding:12px 16px}
+.recent h4{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--grey);margin-bottom:8px}
+.recent-chips{display:flex;gap:8px;flex-wrap:wrap}
+.recent-chip{padding:8px 12px;border-radius:999px;border:1px solid var(--outline);font-size:12px;font-weight:600;background:white;cursor:pointer}
+.highlight{background:var(--hanko-bg);padding:0 3px;border-radius:4px;font-weight:700}
+
+/* empty / error */
+.empty{padding:40px 24px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px}
+.empty-illus{width:120px;height:80px;border:1.5px solid var(--outline);border-radius:12px;display:grid;place-items:center;position:relative;background:repeating-linear-gradient( -15deg, transparent 0 12px, rgba(0,0,0,0.04) 12px 13px)}
+.empty-illus::before{content:"";position:absolute;left:18px;top:18px;width:36px;height:48px;background:var(--mist);border:1.5px solid var(--outline);border-radius:4px;transform:rotate(-8deg)}
+.empty-illus::after{content:"";position:absolute;left:48px;top:14px;width:40px;height:52px;background:white;border:1.5px solid var(--outline);border-radius:4px;transform:rotate(4deg);box-shadow:0 4px 12px rgba(0,0,0,0.08)}
+.empty h3{font-family:'Fraunces',serif;font-size:18px}
+.empty p{font-size:12px;color:var(--grey);line-height:1.5;max-width:260px}
+.shimmer{animation:shimmer 1.2s infinite linear;background:linear-gradient(90deg, var(--mist) 25%, #F6F1E7 50%, var(--mist) 75%);background-size:200% 100%}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.countdown{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;letter-spacing:0.08em;color:var(--hanko)}
+
+/* sheet */
+.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--paper);border-radius:24px 24px 0 0;box-shadow:0 -12px 32px rgba(0,0,0,0.18);padding:16px;border-top:1px solid var(--outline);transform:translateY(100%);transition:transform .28s cubic-bezier(.2,.8,.2,1);z-index:10}
+.sheet.open{transform:translateY(0)}
+.sheet.dark{background:#1E2935;border-color:#2A3441;color:var(--paper)}
+.sheet-handle{width:32px;height:4px;border-radius:999px;background:#C8C0AD;margin:0 auto 12px}
+.sheet.dark .sheet-handle{background:#2A3441}
+.radio{height:56px;border:1.5px solid var(--outline);border-radius:12px;display:flex;align-items:center;gap:12px;padding:0 12px;cursor:pointer;margin-top:8px}
+.radio.active{border-color:var(--hanko);background:var(--hanko-bg)}
+.radio.dark{border-color:#2A3441}
+.radio.dark.active{border-color:var(--hanko2);background:#2E1A14}
+.radio-dot{width:18px;height:18px;border-radius:50%;border:2px solid var(--outline);display:grid;place-items:center;flex-shrink:0}
+.radio.active .radio-dot{border-color:var(--hanko);background:var(--hanko);color:white}
+.scrim{position:absolute;inset:0;background:rgba(15,23,32,0.4);opacity:0;pointer-events:none;transition:opacity .2s;z-index:9}
+.scrim.open{opacity:1;pointer-events:auto}
+
+/* desktop legend */
+.legend{max-width:1600px;margin:8px auto 0;padding:0 20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.legend-card{background:#1E2935;border:1px solid #2A3441;border-radius:12px;padding:14px}
+.legend-card h4{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--grey2);margin-bottom:8px}
+.legend-card p{font-size:12px;line-height:1.6;color:#C8C0AD}
+.tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.08em;padding:4px 8px;border-radius:999px;border:1px solid #2A3441;display:inline-block;margin-top:6px}
+.tag.red{background:var(--hanko);color:white;border-color:var(--hanko)}
+.tag.green{background:#0f2e1f;color:#7de0a6;border-color:#1A7A4C}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div>
+    <h1>ZOMIC <span>—</span> MOCKUP FULL APP</h1>
+    <p>Manga Reader + Auto Library Organizer • PRD FR-1 → FR-10 • Base API <span class="mono" style="color:#FF6B4A">sankavollerei.web.id</span> • Package <span class="mono">com.zaaamzomic</span> • 392×812 phone • Spine-Strip signature</p>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <span class="badge-prd">MVP v1 — NEED APPROVAL</span>
+    <button onclick="document.getElementById('legend').scrollIntoView()" style="background:#F6F1E7;color:#0F1720;border:none;padding:10px 14px;border-radius:999px;font-weight:700;font-size:12px;cursor:pointer">Lihat Legend →</button>
+  </div>
+</div>
+
+<div class="hero">
+  <h2>Rak Pustaka Vertikal</h2>
+  <span class="pill active">60% Paper Ivory #F6F1E7</span>
+  <span class="pill">30% Sumi #0F1720</span>
+  <span class="pill">10% Hanko #E84C2A</span>
+  <span class="hint">Interaksi: coba tap filter chips, tap card → bookmark sheet, ketik di Search, dan toggle overlay Reader. Semua state ada di 1 file ini.</span>
+</div>
+
+<!-- GALLERY -->
+<div class="gallery">
+
+  <!-- S1 TERBARU -->
+  <div>
+    <div class="frame-label"><span class="dot"></span> S1 — Terbaru • FR-2 • /comic/terbaru <span style="margin-left:auto" class="mono">pull-to-refresh • shimmer</span></div>
+    <div class="phone" id="phone-terbaru">
+      <div class="phone-header"><span>09:41</span> <span>•</span> <span>Zomic</span></div>
+      <div class="appbar">
+        <div class="wordmark">ZOMIC<small>TERBARU • KOMIKU DEFAULT</small></div>
+        <div class="appbar-actions">
+          <button class="icon-btn" onclick="alert('Search → geser ke frame Cari')"><i data-lucide="search"></i></button>
+        </div>
+      </div>
+      <div class="filter-row">
+        <button class="chip active">Semua</button>
+        <button class="chip">Manga</button>
+        <button class="chip">Manhwa</button>
+        <button class="chip">Manhua</button>
+        <span class="divider-v"></span>
+        <button class="chip"><i data-lucide="sliders-horizontal" style="width:14px;height:14px"></i> Filter</button>
+      </div>
+      <div class="phone-scroll">
+        <!-- card 1 sedang dibaca ongoing -->
+        <div class="card selected" onclick="openSheet('sheet-terbaru')">
+          <div class="spine red"><span class="spine-dot"></span></div>
+          <div class="cover-wrap">
+            <img class="cover" src="https://picsum.photos/seed/onepiece/128/168" alt="">
+            <span class="badge-cover ongoing">○ ONGOING</span>
+          </div>
+          <div class="card-body">
+            <div class="card-title">One Piece</div>
+            <div class="card-meta">Manga • Aksi • Ch. 1127</div>
+            <div class="card-desc">Luffy dan kru menuju Elbaf, rahasia abad kekosongan mulai terbuka…</div>
+            <div class="progress"><div class="progress-fill" style="width:68%"></div></div>
+            <div class="card-cta">Lanjut Ch. 1127 • P.04 <i data-lucide="arrow-right"></i></div>
+          </div>
+        </div>
+        <!-- card 2 tamat belum dibaca -->
+        <div class="card" onclick="openSheet('sheet-terbaru')">
+          <div class="spine grey"><span class="spine-dot outline"></span></div>
+          <div class="cover-wrap">
+            <img class="cover" src="https://picsum.photos/seed/naruto2/128/168" alt="">
+            <span class="badge-cover tamat">● TAMAT</span>
+          </div>
+          <div class="card-body">
+            <div class="card-title">Naruto</div>
+            <div class="card-meta">Manga • Aksi • Ch. 700</div>
+            <div class="card-desc">Perjalanan ninja dari Konoha — tamat, tinggal kamu tamatin bacanya.</div>
+            <div class="card-cta" style="color:var(--grey)">Belum Dibaca <i data-lucide="bookmark"></i></div>
+          </div>
+        </div>
+        <!-- card 3 dropped -->
+        <div class="card" onclick="openSheet('sheet-terbaru')">
+          <div class="spine dropped"><span class="spine-dot outline"></span></div>
+          <div class="cover-wrap">
+            <img class="cover" src="https://picsum.photos/seed/solo/128/168" alt="">
+            <span class="badge-cover ongoing">○ ONGOING</span>
+          </div>
+          <div class="card-body">
+            <div class="card-title">Solo Leveling</div>
+            <div class="card-meta">Manhwa • Aksi • Ch. 201</div>
+            <div class="card-desc">Sung Jin-woo naik level tanpa henti, dungeon makin gila.</div>
+            <div class="card-cta" style="color:var(--grey)">Dropped <i data-lucide="archive"></i></div>
+          </div>
+        </div>
+        <div class="card" onclick="openSheet('sheet-terbaru')">
+          <div class="spine red"><span class="spine-dot"></span></div>
+          <div class="cover-wrap">
+            <img class="cover" src="https://picsum.photos/seed/jujutsu/128/168" alt="">
+            <span class="badge-cover ongoing">○ ONGOING</span>
+          </div>
+          <div class="card-body">
+            <div class="card-title">Jujutsu Kaisen</div>
+            <div class="card-meta">Manga • Horor • Ch. 258</div>
+            <div class="card-desc">Pertarungan terakhir penyihir — tiap chapter pecah.</div>
+            <div class="progress"><div class="progress-fill" style="width:32%"></div></div>
+            <div class="card-cta">Lanjut Ch. 120 <i data-lucide="arrow-right"></i></div>
+          </div>
+        </div>
+        <!-- shimmer -->
+        <div class="card" style="opacity:0.6">
+          <div class="spine grey" style="background:var(--grey)"></div>
+          <div class="cover shimmer"></div>
+          <div class="card-body">
+            <div style="height:14px;width:60%" class="shimmer"></div>
+            <div style="height:10px;width:40%;margin-top:6px" class="shimmer"></div>
+            <div style="height:10px;width:80%;margin-top:6px" class="shimmer"></div>
+          </div>
+        </div>
+        <div style="height:12px"></div>
+      </div>
+      <div class="bottom-nav">
+        <div class="nav-item active"><i data-lucide="sparkles"></i>Terbaru</div>
+        <div class="nav-item"><i data-lucide="search"></i>Cari</div>
+        <div class="nav-item"><i data-lucide="library"></i>Library</div>
+      </div>
+      <div class="scrim" id="scrim-terbaru" onclick="closeSheet('sheet-terbaru')"></div>
+      <div class="sheet" id="sheet-terbaru">
+        <div class="sheet-handle"></div>
+        <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
+          <img src="https://picsum.photos/seed/onepiece/96/96" style="width:48px;height:48px;border-radius:8px;object-fit:cover">
+          <div>
+            <div style="font-weight:700;font-size:13px">One Piece</div>
+            <div class="mono" style="font-size:11px;color:var(--grey)">○ ONGOING • Hanko = Sedang Dibaca</div>
+          </div>
+          <div style="margin-left:auto;width:4px;height:36px;background:var(--hanko);border-radius:999px"></div>
+        </div>
+        <div class="radio active"><div class="radio-dot">✓</div><div><div style="font-weight:700;font-size:13px">Sedang Dibaca</div><div style="font-size:11px;color:var(--grey)">Lanjut tracking progress</div></div></div>
+        <div class="radio"><div class="radio-dot"></div><div><div style="font-weight:700;font-size:13px">Belum Dibaca</div><div style="font-size:11px;color:var(--grey)">Simpan buat nanti</div></div></div>
+        <div class="radio"><div class="radio-dot"></div><div><div style="font-weight:700;font-size:13px">Dropped</div><div style="font-size:11px;color:var(--grey)">Berhenti follow</div></div></div>
+        <button class="btn-hanko" style="margin-top:14px" onclick="closeSheet('sheet-terbaru')">Simpan ke Library</button>
+        <div style="text-align:center;margin-top:8px;font-size:11px;color:var(--grey)">Long-press card di app asli → sheet ini</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S2 SEARCH EMPTY -->
+  <div>
+    <div class="frame-label"><span class="dot grey"></span> S2a — Cari (empty) • FR-1 • debounce 450ms • cache 10m</div>
+    <div class="phone">
+      <div class="phone-header"><span>09:41</span> <span>•</span> <span>Zomic</span></div>
+      <div class="appbar" style="border-bottom:none">
+        <div class="wordmark">ZOMIC<small>CARI MANGA</small></div>
+        <button class="icon-btn"><i data-lucide="sliders-horizontal"></i></button>
+      </div>
+      <div class="search-field">
+        <i data-lucide="search" style="width:18px;height:18px;color:var(--grey)"></i>
+        <input id="searchInput" placeholder="Cari judul, cth: naruto" oninput="onSearch(this.value)">
+        <button onclick="clearSearch()" style="background:var(--mist);border:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;cursor:pointer"><i data-lucide="x" style="width:14px;height:14px"></i></button>
+      </div>
+      <div class="phone-scroll">
+        <div id="search-empty">
+          <div class="recent">
+            <h4>Pencarian terakhir</h4>
+            <div class="recent-chips">
+              <button class="recent-chip" onclick="fillSearch('one piece')">one piece ✕</button>
+              <button class="recent-chip" onclick="fillSearch('naruto')">naruto ✕</button>
+              <button class="recent-chip" onclick="fillSearch('solo leveling')">solo leveling ✕</button>
+            </div>
+          </div>
+          <div class="recent">
+            <h4>Coba kata kunci</h4>
+            <div class="recent-chips">
+              <button class="recent-chip" onclick="fillSearch('jujutsu')">Jujutsu Kaisen</button>
+              <button class="recent-chip" onclick="fillSearch('chainsaw')">Chainsaw Man</button>
+              <button class="recent-chip" onclick="fillSearch('boruto')">Boruto</button>
+            </div>
+          </div>
+          <div class="empty">
+            <div class="empty-illus"></div>
+            <h3>Mulai cari</h3>
+            <p>Ketik minimal 2 huruf. Pencarian debounce 450ms — patuh rate limit 30/menit.</p>
+            <span class="mono" style="font-size:11px;color:var(--grey)"><i data-lucide="info" style="width:12px;height:12px;display:inline;vertical-align:middle"></i> GET /comic/search?q=</span>
+          </div>
+        </div>
+        <div id="search-results" style="display:none">
+          <div style="padding:10px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--grey);display:flex;justify-content:space-between"><span>Hasil untuk “<span id="qLabel"></span>”</span><span class="mono">4 ditemukan</span></div>
+          <div class="card" onclick="openSheet('sheet-search')">
+            <div class="spine grey"><span class="spine-dot outline"></span></div>
+            <div class="cover-wrap"><img class="cover" src="https://picsum.photos/seed/naruto2/128/168"><span class="badge-cover tamat">● TAMAT</span></div>
+            <div class="card-body">
+              <div class="card-title"><span class="highlight">Naruto</span></div>
+              <div class="card-meta">Manga • Aksi</div>
+              <div class="card-desc">Update 1 tahun lalu. <span class="highlight">Naruto</span> Uzumaki…</div>
+            </div>
+          </div>
+          <div class="card" onclick="openSheet('sheet-search')">
+            <div class="spine grey"><span class="spine-dot"></span></div>
+            <div class="cover-wrap"><img class="cover" src="https://picsum.photos/seed/boruto/128/168"><span class="badge-cover ongoing">○ ONGOING</span></div>
+            <div class="card-body">
+              <div class="card-title"><span class="highlight">Naruto</span> — Boruto</div>
+              <div class="card-meta">Manga • Aksi</div>
+              <div class="card-desc">Kelanjutan kisah <span class="highlight">Naruto</span>…</div>
+            </div>
+          </div>
+          <div style="padding:12px 16px;display:flex;gap:8px">
+            <span class="mono" style="font-size:11px;background:var(--mist);padding:6px 10px;border-radius:999px;border:1px solid var(--outline)">q=naruto</span>
+            <span class="mono" style="font-size:11px;background:#0F1720;color:white;padding:6px 10px;border-radius:999px">total: 4</span>
+          </div>
+        </div>
+        <div id="search-notfound" style="display:none" class="empty">
+          <div class="empty-illus"></div>
+          <h3>Nggak ketemu “<span id="qNot"></span>”</h3>
+          <p>Coba “One Piece” atau “Solo Leveling”. Periksa ejaan, atau browse Terbaru.</p>
+          <button class="btn-ghost" style="max-width:220px" onclick="fillSearch('one piece')">Coba “One Piece”</button>
+        </div>
+      </div>
+      <div class="bottom-nav">
+        <div class="nav-item"><i data-lucide="sparkles"></i>Terbaru</div>
+        <div class="nav-item active"><i data-lucide="search"></i>Cari</div>
+        <div class="nav-item"><i data-lucide="library"></i>Library</div>
+      </div>
+      <div class="scrim" id="scrim-search" onclick="closeSheet('sheet-search')"></div>
+      <div class="sheet" id="sheet-search">
+        <div class="sheet-handle"></div>
+        <div style="font-weight:700">Tambah ke Library?</div>
+        <p style="font-size:12px;color:var(--grey);margin-top:4px">Pilih status bacamu. Status publikasi (Tamat/Ongoing) otomatis dari API.</p>
+        <div class="radio active"><div class="radio-dot">✓</div><div><div style="font-weight:700;font-size:13px">Sedang Dibaca</div><div style="font-size:11px;color:var(--grey)">Masuk Library • auto-tag ONGOING</div></div></div>
+        <button class="btn-hanko" style="margin-top:12px" onclick="closeSheet('sheet-search')">Simpan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- S3 DETAIL - ONGOING with progress -->
+  <div>
+    <div class="frame-label"><span class="dot"></span> S3 — Detail • FR-3/FR-7/FR-8/FR-10 • /comic/comic/:slug</div>
+    <div class="phone">
+      <div class="phone-header"><span>09:41</span> <span>•</span> <span>Zomic</span></div>
+      <div class="appbar" style="position:absolute;top:24px;left:0;right:0;background:transparent;border:none;color:white;z-index:5">
+        <button class="icon-btn" style="background:rgba(0,0,0,0.35);border-color:rgba(255,255,255,0.2);color:white;backdrop-filter:blur(8px)"><i data-lucide="arrow-left"></i></button>
+        <button class="icon-btn" style="background:rgba(0,0,0,0.35);border-color:rgba(255,255,255,0.2);color:white;backdrop-filter:blur(8px)" onclick="openSheet('sheet-detail')"><i data-lucide="bookmark"></i></button>
+      </div>
+      <div class="phone-scroll no-nav">
+        <div class="detail-hero" style="background:
+          linear-gradient(to top, rgba(15,23,32,0.96) 18%, rgba(15,23,32,0.4) 60%, rgba(15,23,32,0.1) 100%),
+          url('https://picsum.photos/seed/onepiecewide/600/400') center/cover">
+          <img class="detail-cover" src="https://picsum.photos/seed/onepiece/240/320" alt="">
+          <div class="detail-title">One Piece</div>
+          <div class="detail-meta"><span style="background:white;color:#0F1720;padding:3px 8px;border-radius:999px;font-weight:700">○ ONGOING</span> <span>Manga • Aksi • Ch. 1127</span> <span>• Komiku</span></div>
+        </div>
+        <!-- ledger -->
+        <div class="ledger">
+          <div class="ledger-row"><span class="mono" style="font-size:11px;font-weight:700;letter-spacing:0.08em">PROGRESS LEDGER</span><span class="mono" style="font-size:11px;color:var(--hanko)">— — — ● — — —</span></div>
+          <div class="ledger-bar"><div class="ledger-fill" style="width:62%"></div></div>
+          <div class="ledger-row"><span class="ledger-text">Terakhir: Ch. 42 P. 03 — 2 hari lalu</span><span class="mono" style="font-size:11px;font-weight:700">62%</span></div>
+          <button class="btn-hanko" onclick="document.getElementById('reader-demo').scrollIntoView({behavior:'smooth',block:'center'})"><i data-lucide="book-open"></i> Lanjut Baca Ch. 43</button>
+          <div style="display:flex;gap:8px">
+            <button class="btn-ghost" style="flex:1" onclick="openSheet('sheet-detail')"><i data-lucide="bookmark"></i> Bookmark</button>
+            <button class="btn-ghost" style="flex:1"><i data-lucide="share-2"></i> Bagikan</button>
+          </div>
+          <div class="mono" style="font-size:10px;color:var(--grey);text-align:center">FR-5 • simpan posisi chapter+halaman • < 3 tap untuk lanjut</div>
+        </div>
+        <div class="synopsis">
+          <strong>Sinopsis</strong> — Monkey D. Luffy berlayar mencari One Piece. Di Elbaf, rahasia Poneglyph dan abad kekosongan terkuak. Vegapunk… <span style="color:var(--hanko);font-weight:700;cursor:pointer">Selengkapnya</span>
+        </div>
+        <div style="padding:8px 16px;display:flex;justify-content:space-between;align-items:center"><span style="font-weight:800;font-size:13px;letter-spacing:0.06em">DAFTAR CHAPTER • 1127</span><span class="mono" style="font-size:11px;color:var(--grey)">Terbaru di atas</span></div>
+        <div class="chapter-item"><div class="chapter-left"><span class="chapter-num">Ch. 1127 <span style="font-weight:400;color:var(--grey)">— Elbaf Akhir</span></span><span class="chapter-date">3 hari lalu • 18 hal</span></div><span class="read-dot"></span></div>
+        <div class="chapter-item"><div class="chapter-left"><span class="chapter-num">Ch. 1126</span><span class="chapter-date">10 hari lalu • 16 hal</span></div><span class="read-dot done"></span></div>
+        <div class="chapter-item" style="background:var(--hanko-bg)"><div class="chapter-left"><span class="chapter-num">Ch. 42 <span style="background:var(--hanko);color:white;padding:2px 6px;border-radius:999px;font-size:10px">TERAKHIR DIBACA • P.03</span></span><span class="chapter-date">2 hari lalu • 19 hal</span></div><span class="read-dot"></span></div>
+        <div class="chapter-item"><div class="chapter-left"><span class="chapter-num">Ch. 1 — Romance Dawn</span><span class="chapter-date">1997 • 54 hal</span></div><span class="read-dot done"></span></div>
+        <div style="padding:12px 16px"><span class="mono" style="font-size:11px;background:var(--mist);padding:6px 10px;border-radius:999px;border:1px solid var(--outline)">GET /comic/comic/one-piece</span></div>
+        <div style="height:16px"></div>
+      </div>
+      <div class="scrim" id="scrim-detail" onclick="closeSheet('sheet-detail')"></div>
+      <div class="sheet" id="sheet-detail">
+        <div class="sheet-handle"></div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <img src="https://picsum.photos/seed/onepiece/96/96" style="width:48px;height:48px;border-radius:8px;object-fit:cover">
+          <div><div style="font-weight:800">One Piece</div><div class="mono" style="font-size:11px;color:var(--grey)">○ ONGOING • auto-tag dari API</div></div>
+          <div style="margin-left:auto;width:4px;height:32px;background:var(--hanko);border-radius:999px"></div>
+        </div>
+        <div class="radio active"><div class="radio-dot">✓</div><div><div style="font-weight:700;font-size:13px">Sedang Dibaca</div><div style="font-size:11px;color:var(--grey)">Tracking aktif • notifikasi chapter baru (Phase 2)</div></div></div>
+        <div class="radio"><div class="radio-dot"></div><div><div style="font-weight:700;font-size:13px">Belum Dibaca</div></div></div>
+        <div class="radio"><div class="radio-dot"></div><div><div style="font-weight:700;font-size:13px">Dropped</div><div style="font-size:11px;color:var(--grey)">Berhenti follow, tetap di Library</div></div></div>
+        <button class="btn-hanko" style="margin-top:12px" onclick="closeSheet('sheet-detail')">Simpan ke Library</button>
+        <p class="mono" style="font-size:10px;color:var(--grey);text-align:center;margin-top:8px">FR-7 • FR-8 auto-tag Tamat/Belum • FR-10 pindah kapan saja</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- S3b DETAIL TAMAT -->
+  <div>
+    <div class="frame-label"><span class="dot ok"></span> S3b — Detail (Tamat) • badge ● TAMAT • isSourceUnavailable</div>
+    <div class="phone">
+      <div class="phone-header"><span>09:41</span></div>
+      <div class="appbar" style="position:absolute;top:24px;left:0;right:0;background:transparent;border:none;color:white;z-index:5">
+        <button class="icon-btn" style="background:rgba(0,0,0,0.35);border-color:rgba(255,255,255,0.2);color:white"><i data-lucide="arrow-left"></i></button>
+        <button class="icon-btn" style="background:rgba(0,0,0,0.35);border-color:rgba(255,255,255,0.2);color:white"><i data-lucide="bookmark"></i></button>
+      </div>
+      <div class="phone-scroll no-nav">
+        <div class="detail-hero" style="background:
+          linear-gradient(to top, rgba(15,23,32,0.96) 18%, rgba(15,23,32,0.3) 100%),
+          url('https://picsum.photos/seed/narutowide/600/400') center/cover">
+          <img class="detail-cover" src="https://picsum.photos/seed/naruto2/240/320">
+          <div class="detail-title">Naruto</div>
+          <div class="detail-meta"><span style="background:#1A7A4C;color:white;padding:3px 8px;border-radius:999px;font-weight:700">● TAMAT</span> <span>Manga • Aksi • 700 Ch</span></div>
+        </div>
+        <div class="ledger">
+          <div class="ledger-row"><span class="mono" style="font-size:11px;font-weight:700">PROGRESS LEDGER</span><span style="font-size:11px;color:var(--ok)">✔ Selesai? Belum — tinggal 18 ch lagi</span></div>
+          <div class="ledger-bar"><div class="ledger-fill" style="width:92%;background:var(--ok)"></div></div>
+          <div class="ledger-row"><span class="ledger-text">Terakhir: Ch. 682 P. 11 • kemarin</span><span class="mono" style="font-size:11px">92%</span></div>
+          <button class="btn-hanko" style="background:var(--ok)">Lanjut Baca Ch. 683</button>
+        </div>
+        <!-- source unavailable banner -->
+        <div style="margin:12px 16px;background:#FFF4E5;border:1px solid #E8C28A;border-radius:10px;padding:10px 12px;display:flex;gap:10px;align-items:center">
+          <i data-lucide="alert-triangle" style="width:18px;height:18px;color:#9A6B1A;flex-shrink:0"></i>
+          <div><div style="font-weight:700;font-size:12px">Sumber tidak tersedia</div><div style="font-size:11px;color:#6b5900">Manga hilang dari API, tapi tetap muncul di Library & history tersimpan.</div></div>
+        </div>
+        <div class="synopsis"><strong>Sinopsis</strong> — Naruto Uzumaki ingin jadi Hokage. Kisah tamat di Ch. 700, epilog Boruto… <span style="color:var(--hanko);font-weight:700">Selengkapnya</span></div>
+        <div style="padding:8px 16px;font-weight:800;font-size:13px;letter-spacing:0.06em">DAFTAR CHAPTER</div>
+        <div class="chapter-item"><div class="chapter-left"><span class="chapter-num">Ch. 700 — Naruto Uzumaki!!</span><span class="chapter-date">Tamat • 22 hal</span></div><span class="read-dot"></span></div>
+        <div class="chapter-item" style="background:var(--hanko-bg)"><div class="chapter-left"><span class="chapter-num">Ch. 682 <span style="background:var(--ok);color:white;padding:2px 6px;border-radius:999px;font-size:10px">TERAKHIR</span></span><span class="chapter-date">kemarin</span></div><span class="read-dot"></span></div>
+        <div style="height:16px"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S4 READER -->
+  <div id="reader-demo">
+    <div class="frame-label"><span class="dot"></span> S4 — Reader • FR-4/FR-5 • /comic/chapter/:slug • image caching</div>
+    <div class="phone dark" style="background:#0F1720">
+      <div class="phone-header" style="background:#0F1720;border-bottom:1px solid #1E2935"><span>09:41</span> <span>•</span> <span>Reader</span></div>
+      <div class="reader-bg">
+        <div class="reader-overlay">
+          <button class="icon-btn dark" style="width:32px;height:32px"><i data-lucide="arrow-left"></i></button>
+          <div style="text-align:center"><div class="mono" style="font-size:11px;letter-spacing:0.08em">ONE PIECE — CH. 43</div><div class="mono" style="font-size:10px;color:var(--grey2)">P. 04 / 19 • tap tengah untuk overlay</div></div>
+          <button class="icon-btn dark" style="width:32px;height:32px" onclick="alert('Bookmark dari reader → FR-7')"><i data-lucide="bookmark"></i></button>
+        </div>
+        <div class="reader-pages" id="readerPages">
+          <div class="reader-page"><img src="https://picsum.photos/seed/reader1/600/800" onerror="this.style.display='none'"><span style="position:absolute">HAL 01 — cover ch. 43</span></div>
+          <div class="gutter"></div>
+          <div class="reader-page"><img src="https://picsum.photos/seed/reader2/600/800" onerror="this.style.display='none'"><span style="position:absolute">HAL 02</span></div>
+          <div class="gutter"></div>
+          <div class="reader-page" style="border:1.5px dashed #3A4553">
+            <div style="text-align:center;padding:20px">
+              <i data-lucide="image-off" style="width:28px;height:28px;margin:0 auto 8px;display:block"></i>
+              <div style="font-weight:700;font-size:12px">Gagal load halaman 04</div>
+              <div style="font-size:11px;color:var(--grey2);margin-top:4px">Koneksi lemah • retry per halaman</div>
+              <button onclick="this.closest('.reader-page').style.borderStyle='solid';this.textContent='Memuat…'" style="margin-top:10px;background:var(--hanko2);color:white;border:none;padding:8px 14px;border-radius:999px;font-weight:700;font-size:12px;cursor:pointer">Muat Ulang Halaman</button>
+            </div>
+          </div>
+          <div class="gutter"></div>
+          <div class="reader-page"><img src="https://picsum.photos/seed/reader3/600/800" onerror="this.style.display='none'"><span style="position:absolute">HAL 05</span></div>
+          <div style="height:8px"></div>
+          <div class="mono" style="font-size:10px;color:var(--grey2);text-align:center;display:flex;align-items:center;gap:8px;justify-content:center"><span style="flex:1;height:1px;background:#1E2935"></span> Page Gutter — lipatan buku (dashed) <span style="flex:1;height:1px;background:#1E2935"></span></div>
+          <div style="height:8px"></div>
+        </div>
+        <div class="scrub">
+          <div class="scrub-track"><div class="scrub-fill"></div></div>
+          <div class="scrub-row"><button class="scrub-btn">‹ Ch. 42</button><span class="mono">P. 04 / 19 • progress auto-save 500ms</span><button class="scrub-btn">Ch. 44 ›</button></div>
+          <div class="mono" style="font-size:10px;color:#5a6470;text-align:center">GET /comic/chapter/one-piece-chapter-43 • Coil disk 250MB • preload ±2 hal</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S5 LIBRARY FILTERED -->
+  <div>
+    <div class="frame-label"><span class="dot"></span> S5 — Library • FR-6→FR-10 • filter 2 dimensi • &lt;3 tap lanjut baca</div>
+    <div class="phone">
+      <div class="phone-header"><span>09:41</span></div>
+      <div class="appbar">
+        <div class="wordmark">ZOMIC<small>LIBRARY • AUTO ORGANIZER</small></div>
+        <div class="appbar-actions"><button class="icon-btn"><i data-lucide="filter"></i></button></div>
+      </div>
+      <div class="filter-row" id="libFilters">
+        <button class="chip active" data-f="all" onclick="setLibFilter(this,'all')">Semua</button>
+        <button class="chip" data-f="sedang" onclick="setLibFilter(this,'sedang')">Sedang Dibaca • 2</button>
+        <button class="chip" data-f="belum" onclick="setLibFilter(this,'belum')">Belum Dibaca • 1</button>
+        <button class="chip" data-f="dropped" onclick="setLibFilter(this,'dropped')">Dropped • 1</button>
+        <span class="divider-v"></span>
+        <button class="chip" data-p="tamat" onclick="togglePub(this)">Tamat</button>
+        <button class="chip active" data-p="ongoing" onclick="togglePub(this)">Belum Tamat</button>
+      </div>
+      <div class="phone-scroll">
+        <div style="padding:10px 16px 0;display:flex;justify-content:space-between;align-items:center">
+          <span style="font-weight:800;font-size:12px;letter-spacing:0.1em">SEDANG DIBACA (2)</span>
+          <span class="mono" style="font-size:11px;color:var(--grey)">tap → langsung Reader</span>
+        </div>
+        <div class="card selected lib-card" data-status="sedang" data-pub="ongoing" onclick="openSheet('sheet-lib')">
+          <div class="spine red"><span class="spine-dot"></span></div>
+          <div class="cover-wrap"><img class="cover" src="https://picsum.photos/seed/onepiece/128/168"><span class="badge-cover ongoing">○ ONGOING</span></div>
+          <div class="card-body">
+            <div class="card-title">One Piece</div>
+            <div class="card-meta">Ch. 43 / 1127 • P.04</div>
+            <div class="progress"><div class="progress-fill" style="width:68%"></div></div>
+            <div class="card-cta">Lanjut Baca → <i data-lucide="arrow-right"></i></div>
+          </div>
+        </div>
+        <div class="card selected lib-card" data-status="sedang" data-pub="ongoing">
+          <div class="spine red"><span class="spine-dot"></span></div>
+          <div class="cover-wrap"><img class="cover" src="https://picsum.photos/seed/jujutsu/128/168"><span class="badge-cover ongoing">○ ONGOING</span></div>
+          <div class="card-body">
+            <div class="card-title">Jujutsu Kaisen</div>
+            <div class="card-meta">Ch. 120 / 258 • P.01</div>
+            <div class="progress"><div class="progress-fill" style="width:32%"></div></div>
+            <div class="card-cta">Lanjut Ch. 120</div>
+          </div>
+        </div>
+
+        <div style="padding:14px 16px 0;display:flex;justify-content:space-between;align-items:center">
+          <span style="font-weight:800;font-size:12px;letter-spacing:0.1em">BELUM DIBACA (1)</span>
+          <span class="mono" style="font-size:11px;color:var(--grey)">tap → Detail</span>
+        </div>
+        <div class="card lib-card" data-status="belum" data-pub="tamat">
+          <div class="spine grey"><span class="spine-dot outline"></span></div>
+          <div class="cover-wrap"><img class="cover" src="https://picsum.photos/seed/naruto2/128/168"><span class="badge-cover tamat">● TAMAT</span></div>
+          <div class="card-body">
+            <div class="card-title">Naruto</div>
+            <div class="card-meta">Manga • Tamat • 700 Ch</div>
+            <div class="card-desc">Tamat, tinggal kamu selesaikan.</div>
+          </div>
+        </div>
+
+        <div style="padding:14px 16px 0;font-weight:800;font-size:12px;letter-spacing:0.1em">DROPPED (1)</div>
+        <div class="card lib-card" data-status="dropped" data-pub="ongoing" style="opacity:0.85">
+          <div class="spine dropped"><span class="spine-dot outline"></span></div>
+          <div class="cover-wrap"><img class="cover" src="https://picsum.photos/seed/solo/128/168" style="filter:grayscale(0.35)"><span class="badge-cover ongoing">○ ONGOING</span></div>
+          <div class="card-body">
+            <div class="card-title">Solo Leveling</div>
+            <div class="card-meta">Dropped • swipe kanan untuk restore</div>
+          </div>
+        </div>
+        <div style="padding:14px 16px" class="mono"><span style="font-size:11px;background:#0F1720;color:white;padding:6px 10px;border-radius:999px">FR-9 filter: readingStatus × publicationStatus</span></div>
+        <div style="height:8px"></div>
+      </div>
+      <div class="bottom-nav">
+        <div class="nav-item"><i data-lucide="sparkles"></i>Terbaru</div>
+        <div class="nav-item"><i data-lucide="search"></i>Cari</div>
+        <div class="nav-item active"><i data-lucide="library"></i>Library</div>
+      </div>
+      <div class="scrim" id="scrim-lib" onclick="closeSheet('sheet-lib')"></div>
+      <div class="sheet" id="sheet-lib">
+        <div class="sheet-handle"></div>
+        <div style="font-weight:800">Pindah status?</div>
+        <p style="font-size:12px;color:var(--grey);margin-top:4px">FR-10 • pindah kapan saja, tanpa duplikat (upsert by slug).</p>
+        <div class="radio active"><div class="radio-dot">✓</div><div><div style="font-weight:700;font-size:13px">Sedang Dibaca</div><div style="font-size:11px;color:var(--grey)">Tetap tracking</div></div></div>
+        <div class="radio"><div class="radio-dot"></div><div><div style="font-weight:700;font-size:13px">Dropped</div></div></div>
+        <button class="btn-hanko" style="margin-top:12px" onclick="closeSheet('sheet-lib')">Simpan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- S5 EMPTY -->
+  <div>
+    <div class="frame-label"><span class="dot grey"></span> S5b — Library Empty • Library offline saat API down</div>
+    <div class="phone">
+      <div class="phone-header"><span>09:41</span></div>
+      <div class="appbar"><div class="wordmark">ZOMIC<small>LIBRARY</small></div></div>
+      <div class="filter-row"><button class="chip active">Semua</button><button class="chip">Sedang Dibaca</button><button class="chip">Belum Dibaca</button></div>
+      <div class="phone-scroll">
+        <div class="empty">
+          <div class="empty-illus"></div>
+          <h3>Belum ada yang di-Sedang Dibaca</h3>
+          <p>Library kamu masih kosong. Mulai dari Terbaru, bookmark manga biar auto-keorganize.</p>
+          <button class="btn-hanko" style="max-width:220px"><i data-lucide="sparkles"></i> Jelajahi Terbaru</button>
+          <div class="mono" style="font-size:11px;color:var(--grey);background:white;border:1px solid var(--outline);padding:8px 12px;border-radius:8px">Offline parsial: Library & riwayat tetap bisa dibuka saat API down.</div>
+        </div>
+      </div>
+      <div class="bottom-nav"><div class="nav-item"><i data-lucide="sparkles"></i>Terbaru</div><div class="nav-item"><i data-lucide="search"></i>Cari</div><div class="nav-item active"><i data-lucide="library"></i>Library</div></div>
+    </div>
+  </div>
+
+  <!-- ERROR STATES -->
+  <div>
+    <div class="frame-label"><span class="dot" style="background:#DC2626"></span> ERROR STATES • 429 • API down • image gagal</div>
+    <div class="phone">
+      <div class="phone-header"><span>09:41</span></div>
+      <div class="appbar"><div class="wordmark">ZOMIC<small>ERROR HANDLING</small></div></div>
+      <div class="phone-scroll">
+        <!-- 429 -->
+        <div style="margin:16px;background:#FFF1F0;border:1px solid #F5A6A0;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;gap:10px;align-items:center"><i data-lucide="hourglass" style="width:20px;height:20px;color:var(--hanko)"></i><div><div style="font-weight:800;font-size:13px">Kena batas 30/menit — istirahat 45 detik</div><div style="font-size:11px;color:var(--grey)">Rate limit guard aktif, jangan burst.</div></div></div>
+          <div class="countdown" id="countdown">00:42</div>
+          <div class="progress"><div class="progress-fill" style="width:28%;background:var(--hanko)"></div></div>
+          <div style="display:flex;gap:8px"><button class="btn-hanko" style="flex:1">Coba Lagi</button><button class="btn-ghost" style="flex:1">Buka Library Offline</button></div>
+          <div class="mono" style="font-size:10px;color:var(--grey)">429 • auto-retry dengan delay, bukan retry beruntun • max 2x</div>
+        </div>
+        <!-- api down -->
+        <div style="margin:0 16px;background:#F6F1E7;border:1px solid var(--outline);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;gap:10px;align-items:center"><i data-lucide="wifi-off" style="width:20px;height:20px;color:var(--grey)"></i><div><div style="font-weight:800;font-size:13px">Sumber lagi tiarap</div><div style="font-size:11px;color:var(--grey)">API tidak bisa diakses, coba lagi sebentar.</div></div></div>
+          <button class="btn-ghost">Buka Library Offline</button>
+          <div class="mono" style="font-size:10px;color:var(--grey)">GET /comic/* • fallback ke cache lokal</div>
+        </div>
+        <!-- image fail per halaman -->
+        <div style="margin:16px;background:white;border:1px solid var(--outline);border-radius:12px;padding:14px;display:flex;gap:12px;align-items:center">
+          <div style="width:64px;height:42px;background:var(--mist);border-radius:8px;display:grid;place-items:center;border:1px dashed var(--outline)"><i data-lucide="image-off" style="width:18px;height:18px;color:var(--grey)"></i></div>
+          <div style="flex:1"><div style="font-weight:700;font-size:12px">Chapter gagal load gambar</div><div style="font-size:11px;color:var(--grey)">Retry otomatis + tombol manual per halaman</div></div>
+          <button style="background:var(--hanko);color:white;border:none;padding:8px 12px;border-radius:999px;font-weight:700;font-size:11px;cursor:pointer">Retry</button>
+        </div>
+        <div style="margin:0 16px;background:#0F1720;color:white;border-radius:10px;padding:12px" class="mono"><div style="font-size:11px;letter-spacing:0.08em;opacity:0.8">EDGE CASES • PRD §11</div><div style="font-size:11px;line-height:1.6;margin-top:6px;color:#A8AFB8">• Manga hilang → tag “sumber tidak tersedia”<br>• Bookmark duplikat → upsert by slug<br>• Koneksi lemah → progressive + indikator P.04/19</div></div>
+        <div style="height:16px"></div>
+      </div>
+      <div class="bottom-nav"><div class="nav-item"><i data-lucide="sparkles"></i>Terbaru</div><div class="nav-item"><i data-lucide="search"></i>Cari</div><div class="nav-item"><i data-lucide="library"></i>Library</div></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- LEGEND -->
+<div id="legend" class="legend">
+  <div class="legend-card">
+    <h4>Spine Strip — Signature</h4>
+    <p>4dp di kiri card meng-encode 2 status: warna = readingStatus (merah Sedang, abu Belum, stripe Dropped), dot 6dp = publikasi (● Tamat / ○ Ongoing). Di Reader memanjang jadi Progress Ledger.</p>
+    <span class="tag red">● Sedang Dibaca</span> <span class="tag">○ ONGOING</span> <span class="tag green">● TAMAT</span>
+  </div>
+  <div class="legend-card">
+    <h4>Alur Utama</h4>
+    <p><strong>Baca & bookmark:</strong> Terbaru/Search → Detail → Chapter → Reader → bookmark → auto-tag Tamat muncul di Library.<br><strong>Lanjut baca:</strong> Library filter Sedang Dibaca → tap card → langsung Reader di P.04 (&lt;3 tap).</p>
+    <span class="tag">FR-1 → FR-10 • MVP</span>
+  </div>
+  <div class="legend-card">
+    <h4>Rate Limit Guard</h4>
+    <p>Debounce 450ms, cache 10m, OkHttp 10MB, token bucket 30/menit, queue + retry backoff. Jangan batch-fetch thumbnail — Coil lazy load.</p>
+    <span class="tag red">30 req/menit/IP • 3x = BAN</span>
+  </div>
+  <div class="legend-card">
+    <h4>Next: Approval</h4>
+    <p>Mockup ini gate sebelum Compose. Jika OK, build scaffold Android (com.zaaamzomic) + core-network + Room. Jika revisi, mention warna/komponen yang perlu ubah.</p>
+    <span class="tag">Reply via Telegram</span>
+  </div>
+</div>
+
+<div style="max-width:1600px;margin:16px auto 40px;padding:0 20px;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+  <span class="mono" style="font-size:11px;color:var(--grey2)">Mockup single-file • no build step • python3 -m http.server 8000 --directory mockups • fonts: Fraunces + Plus Jakarta Sans + JetBrains Mono • icons: Lucide</span>
+  <span style="margin-left:auto;background:var(--hanko);color:white;padding:8px 14px;border-radius:999px;font-weight:700;font-size:12px">Menunggu persetujuan Telegram → baru masuk UI Compose</span>
+</div>
+
+<script>
+lucide.createIcons();
+function openSheet(id){document.getElementById(id).classList.add('open');document.getElementById('scrim-'+id.split('-')[1]).classList.add('open')}
+function closeSheet(id){document.getElementById(id).classList.remove('open');document.getElementById('scrim-'+id.split('-')[1]).classList.remove('open')}
+function fillSearch(v){document.getElementById('searchInput').value=v;onSearch(v)}
+function clearSearch(){document.getElementById('searchInput').value='';onSearch('')}
+function onSearch(v){
+  const q=v.trim().toLowerCase();
+  const empty=document.getElementById('search-empty');
+  const res=document.getElementById('search-results');
+  const nf=document.getElementById('search-notfound');
+  document.getElementById('qLabel').textContent=v;
+  document.getElementById('qNot').textContent=v;
+  if(q.length===0){empty.style.display='';res.style.display='none';nf.style.display='none';return}
+  if(q.length<2){empty.style.display='';res.style.display='none';nf.style.display='none';return}
+  // mock: only naruto & boruto found, others not found, jujutsu => show results too
+  if(q.includes('naru')||q.includes('boruto')||q.includes('one piece')||q.includes('jujutsu')||q.includes('chainsaw')){
+    empty.style.display='none';res.style.display='';nf.style.display='none';
+  } else {
+    empty.style.display='none';res.style.display='none';nf.style.display='';
+  }
+}
+function setLibFilter(el, f){
+  document.querySelectorAll('#libFilters .chip[data-f]').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.lib-card').forEach(card=>{
+    if(f==='all') card.style.display='';
+    else card.style.display = card.dataset.status===f ? '' : 'none';
+  });
+}
+function togglePub(el){
+  el.classList.toggle('active');
+}
+// countdown demo
+let n=42; setInterval(()=>{n=n<=0?45:n-1; const el=document.getElementById('countdown'); if(el) el.textContent='00:'+String(n).padStart(2,'0')},1000);
+</script>
+</body>
+</html>

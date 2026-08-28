@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <cache-path name="coil" path="coil_cache/" />
+    <cache-path name="http" path="http_cache/" />
+    <cache-path name="http_image" path="http_image_cache/" />
+</paths>

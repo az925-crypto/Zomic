@@ -1,0 +1,37 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "placeholder-must-be-regenerated-via-gradle-ksp",
+    "entities": [
+      {
+        "tableName": "manga_library",
+        "createSql": "CREATE TABLE IF NOT EXISTS `manga_library` (`slug` TEXT NOT NULL, `title` TEXT NOT NULL, `thumbnail` TEXT, `type` TEXT, `genre` TEXT, `description` TEXT, `publicationStatus` TEXT NOT NULL, `publicationRaw` TEXT, `readingStatus` TEXT, `lastReadChapterSlug` TEXT, `lastReadChapterTitle` TEXT, `lastReadPageIndex` INTEGER NOT NULL, `totalPagesInChapter` INTEGER, `lastReadAt` INTEGER, `isSourceUnavailable` INTEGER NOT NULL, `addedAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`slug`))",
+        "fields": [
+          {"fieldPath": "slug", "columnName": "slug", "affinity": "TEXT", "notNull": true},
+          {"fieldPath": "title", "columnName": "title", "affinity": "TEXT", "notNull": true},
+          {"fieldPath": "thumbnail", "columnName": "thumbnail", "affinity": "TEXT", "notNull": false},
+          {"fieldPath": "type", "columnName": "type", "affinity": "TEXT", "notNull": false},
+          {"fieldPath": "genre", "columnName": "genre", "affinity": "TEXT", "notNull": false},
+          {"fieldPath": "description", "columnName": "description", "affinity": "TEXT", "notNull": false},
+          {"fieldPath": "publicationStatus", "columnName": "publicationStatus", "affinity": "TEXT", "notNull": true},
+          {"fieldPath": "publicationRaw", "columnName": "publicationRaw", "affinity": "TEXT", "notNull": false},
+          {"fieldPath": "readingStatus", "columnName": "readingStatus", "affinity": "TEXT", "notNull": false},
+          {"fieldPath": "lastReadChapterSlug", "columnName": "lastReadChapterSlug", "affinity": "TEXT", "notNull": false},
+          {"fieldPath": "lastReadChapterTitle", "columnName": "lastReadChapterTitle", "affinity": "TEXT", "notNull": false},
+          {"fieldPath": "lastReadPageIndex", "columnName": "lastReadPageIndex", "affinity": "INTEGER", "notNull": true},
+          {"fieldPath": "totalPagesInChapter", "columnName": "totalPagesInChapter", "affinity": "INTEGER", "notNull": false},
+          {"fieldPath": "lastReadAt", "columnName": "lastReadAt", "affinity": "INTEGER", "notNull": false},
+          {"fieldPath": "isSourceUnavailable", "columnName": "isSourceUnavailable", "affinity": "INTEGER", "notNull": true},
+          {"fieldPath": "addedAt", "columnName": "addedAt", "affinity": "INTEGER", "notNull": true},
+          {"fieldPath": "updatedAt", "columnName": "updatedAt", "affinity": "INTEGER", "notNull": true}
+        ],
+        "primaryKey": {"columnNames": ["slug"], "autoGenerate": false},
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": ["CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)", "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'placeholder-must-be-regenerated-via-gradle-ksp')"]
+  }
+}
