@@ -92,17 +92,38 @@ class LazyColumnKeyTest {
     // --- File content verification (RED before fix, GREEN after fix) ---
 
     private fun readFile(path: String): String {
-        // Try multiple possible locations: current working dir is /data/data/com.termux/files/home/git/zomic
-        val candidates = listOf(
-            File(path),
-            File("/data/data/com.termux/files/home/git/zomic/$path"),
-            File("app/src/main/java/com/zaaamzomic/ui/screens/${File(path).name}")
+        val direct = File(path)
+        if (direct.exists()) return direct.readText()
+        // search upward from user.dir and from current file location
+        val startDirs = listOf(File(System.getProperty("user.dir") ?: "."), File("."), File(".."), File("../.."))
+        for (base in startDirs) {
+            var cur: File? = base.canonicalFile
+            repeat(5) {
+                val candidate = File(cur, path)
+                if (candidate.exists()) return candidate.readText()
+                // also try without app prefix if path starts with app/
+                if (path.startsWith("app/")) {
+                    val alt = File(cur, path.removePrefix("app/"))
+                    if (alt.exists()) return alt.readText()
+                }
+                // try app/src/... relative to cur
+                val name = File(path).name
+                val alt2 = File(cur, "app/src/main/java/com/zaaamzomic/ui/screens/$name")
+                if (alt2.exists()) return alt2.readText()
+                val alt3 = File(cur, "src/main/java/com/zaaamzomic/ui/screens/$name")
+                if (alt3.exists()) return alt3.readText()
+                cur = cur?.parentFile
+                if (cur == null) return@repeat
+            }
+        }
+        // last resort: search from filesystem root
+        val absCandidates = listOf(
+            File("/home/runner/work/Zomic/Zomic/$path"),
+            File("/github/workspace/$path"),
+            File("/data/data/com.termux/files/home/git/zomic/$path")
         )
-        for (f in candidates) if (f.exists()) return f.readText()
-        // Fallback: try relative from project root
-        val f = File("/data/data/com.termux/files/home/git/zomic/app/src/main/java/com/zaaamzomic/ui/screens/${File(path).name}")
-        if (f.exists()) return f.readText()
-        fail("File not found: $path")
+        for (f in absCandidates) if (f.exists()) return f.readText()
+        fail("File not found: $path (user.dir=${System.getProperty("user.dir")})")
         return ""
     }
 
