@@ -18,6 +18,7 @@ import com.zaaamzomic.data.db.PublicationStatus
 import com.zaaamzomic.data.network.MangaSummaryDto
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
 class SearchViewModel(private val container: AppContainer) : ViewModel() {
     private val _query = MutableStateFlow("")

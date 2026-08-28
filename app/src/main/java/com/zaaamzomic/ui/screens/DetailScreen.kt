@@ -119,23 +119,24 @@ fun DetailScreen(
                 }
                 else -> LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     item {
-                        val d = vm.detail ?: return@LazyColumn
-                        val pub = LibraryRepository.parsePublication(d.status, d.description)
-                        val pubLabel = when (pub) {
-                            PublicationStatus.TAMAT -> "● TAMAT"
-                            PublicationStatus.BELUM_TAMAT -> "○ ONGOING"
-                            PublicationStatus.UNKNOWN -> "Status tak diketahui"
-                        }
-                        Card {
-                            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                                Text(d.title, style = MaterialTheme.typography.titleLarge)
-                                Text(pubLabel, style = MaterialTheme.typography.labelSmall, color = if (pub == PublicationStatus.TAMAT) com.zaaamzomic.ui.theme.OkGreen else MaterialTheme.colorScheme.onSurfaceVariant)
-                                Text(d.description ?: "", style = MaterialTheme.typography.bodyMedium)
-                                if (prog?.lastReadChapterSlug != null) {
-                                    HorizontalDivider()
-                                    Text("Terakhir: ${prog?.lastReadChapterSlug} • P.${prog?.lastReadPageIndex ?: 0}", style = MaterialTheme.typography.labelSmall)
-                                    Button(onClick = { prog?.lastReadChapterSlug?.let(onChapterClick) }, modifier = Modifier.fillMaxWidth()) {
-                                        Text("Lanjut Baca ${prog?.lastReadChapterSlug}")
+                        vm.detail?.let { d ->
+                            val pub = LibraryRepository.parsePublication(d.status, d.description)
+                            val pubLabel = when (pub) {
+                                PublicationStatus.TAMAT -> "● TAMAT"
+                                PublicationStatus.BELUM_TAMAT -> "○ ONGOING"
+                                PublicationStatus.UNKNOWN -> "Status tak diketahui"
+                            }
+                            Card {
+                                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    Text(d.title, style = MaterialTheme.typography.titleLarge)
+                                    Text(pubLabel, style = MaterialTheme.typography.labelSmall, color = if (pub == PublicationStatus.TAMAT) com.zaaamzomic.ui.theme.OkGreen else MaterialTheme.colorScheme.onSurfaceVariant)
+                                    Text(d.description ?: "", style = MaterialTheme.typography.bodyMedium)
+                                    if (prog?.lastReadChapterSlug != null) {
+                                        HorizontalDivider()
+                                        Text("Terakhir: ${prog?.lastReadChapterSlug} • P.${prog?.lastReadPageIndex ?: 0}", style = MaterialTheme.typography.labelSmall)
+                                        Button(onClick = { prog?.lastReadChapterSlug?.let(onChapterClick) }, modifier = Modifier.fillMaxWidth()) {
+                                            Text("Lanjut Baca ${prog?.lastReadChapterSlug}")
+                                        }
                                     }
                                 }
                             }
