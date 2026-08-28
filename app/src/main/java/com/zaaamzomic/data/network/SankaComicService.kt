@@ -17,7 +17,28 @@ interface SankaComicService {
     suspend fun getTerbaru(): TerbaruWrapper
 
     @GET("/comic/populer")
-    suspend fun getPopuler(): SearchWrapper
+    suspend fun getPopuler(): TerbaruWrapper
+
+    @GET("/comic/trending")
+    suspend fun getTrending(): TrendingWrapper
+
+    @GET("/comic/genres")
+    suspend fun getGenres(): GenresWrapper
+
+    @GET("/comic/genre/{genre}")
+    suspend fun getGenreComics(@Path("genre") genre: String): GenreComicsWrapper
+
+    @GET("/comic/berwarna/{page}")
+    suspend fun getBerwarna(@Path("page") page: Int): BerwarnaWrapper
+
+    @GET("/comic/pustaka/{page}")
+    suspend fun getPustaka(@Path("page") page: Int): PustakaWrapper
+
+    @GET("/comic/scroll")
+    suspend fun getScroll(): ScrollWrapper
+
+    @GET("/comic/infinite")
+    suspend fun getInfinite(): InfiniteWrapper
 
     @GET("/comic/search")
     suspend fun search(@Query("q") q: String): SearchWrapper

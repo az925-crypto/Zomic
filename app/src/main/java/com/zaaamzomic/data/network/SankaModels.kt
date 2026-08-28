@@ -7,11 +7,9 @@ import kotlinx.serialization.json.JsonElement
 // Helper to extract slug from link like "/manga/foo/" or "/detail-komik/foo/"
 fun extractSlug(link: String?): String {
     if (link.isNullOrBlank()) return ""
-    val trimmed = link.trim('/',' ')
+    val trimmed = link.trim('/', ' ')
     if (trimmed.isEmpty()) return ""
-    // take last segment after /
     val last = trimmed.substringAfterLast('/')
-    // handle query
     return last.ifBlank { trimmed.substringAfterLast('/', trimmed) }.trim()
 }
 
@@ -25,7 +23,6 @@ data class MangaSummaryDto(
     val type: String? = null,
     val genre: String? = null,
     val description: String? = null,
-    // search also returns altTitle but ignore
     val altTitle: String? = null,
 )
 
@@ -37,6 +34,14 @@ data class TerbaruComicDto(
     val image: String? = null,
     val chapter: String? = null,
     @SerialName("time_ago") val timeAgo: String? = null,
+    val status: String? = null,
+    val rating: String? = null,
+    val genre: String? = null,
+    val views: JsonElement? = null,
+    @SerialName("trending_score") val trendingScore: Int? = null,
+    val timeframe: String? = null,
+    @SerialName("scroll_position") val scrollPosition: Int? = null,
+    val type: String? = null,
 ) {
     fun toSummary(): MangaSummaryDto {
         val s = extractSlug(link)
@@ -45,9 +50,9 @@ data class TerbaruComicDto(
             slug = s,
             href = link,
             thumbnail = image,
-            type = null,
-            genre = null,
-            description = listOfNotNull(chapter, timeAgo).joinToString(" • "),
+            type = type,
+            genre = genre,
+            description = listOfNotNull(chapter, timeAgo, genre).filter { it.isNotBlank() }.joinToString(" • "),
         )
     }
 }
@@ -56,8 +61,106 @@ data class TerbaruComicDto(
 data class TerbaruWrapper(
     val creator: String? = null,
     val comics: List<TerbaruComicDto> = emptyList(),
-    // fallback: some env returns data/comics alternative
     val data: List<MangaSummaryDto>? = null,
+    val pagination: JsonElement? = null,
+)
+
+// ========== Trending ==========
+@Serializable
+data class TrendingWrapper(
+    val creator: String? = null,
+    val trending: List<TerbaruComicDto> = emptyList(),
+    val timeframe: String? = null,
+    val count: Int? = null,
+    @SerialName("last_updated") val lastUpdated: String? = null,
+)
+
+// ========== Genres list ==========
+@Serializable
+data class GenreValueDto(
+    val value: String = "",
+    val name: String = "",
+)
+
+@Serializable
+data class GenresWrapper(
+    val creator: String? = null,
+    val status: JsonElement? = null,
+    val message: String? = null,
+    val data: List<GenreValueDto> = emptyList(),
+)
+
+// Genre comics: /comic/genre/{value}
+@Serializable
+data class GenreComicsWrapper(
+    val creator: String? = null,
+    val genre: String? = null,
+    val comics: List<TerbaruComicDto> = emptyList(),
+    val pagination: JsonElement? = null,
+    val metadata: JsonElement? = null,
+)
+
+// Pustaka / Berwarna results have different shape
+@Serializable
+data class PustakaDto(
+    val title: String = "",
+    val thumbnail: String? = null,
+    val type: String? = null,
+    val genre: String? = null,
+    val url: String? = null,
+    @SerialName("detailUrl") val detailUrl: String? = null,
+    val description: String? = null,
+    val stats: String? = null,
+) {
+    fun toSummary(): MangaSummaryDto {
+        val s = extractSlug(detailUrl ?: url)
+        return MangaSummaryDto(
+            title = title,
+            slug = s,
+            href = detailUrl ?: url,
+            thumbnail = thumbnail,
+            type = type,
+            genre = genre,
+            description = listOfNotNull(description?.take(60), stats).joinToString(" • "),
+        )
+    }
+}
+
+@Serializable
+data class PustakaWrapper(
+    val creator: String? = null,
+    val page: Int? = null,
+    val results: List<PustakaDto> = emptyList(),
+)
+
+@Serializable
+data class BerwarnaDataDto(
+    val page: Int? = null,
+    val results: List<PustakaDto> = emptyList(),
+)
+
+@Serializable
+data class BerwarnaWrapper(
+    val creator: String? = null,
+    val status: JsonElement? = null,
+    val message: String? = null,
+    val data: BerwarnaDataDto? = null,
+)
+
+// Infinite / Scroll
+@Serializable
+data class InfiniteWrapper(
+    val creator: String? = null,
+    val type: String? = null,
+    val comics: List<TerbaruComicDto> = emptyList(),
+    val pagination: JsonElement? = null,
+)
+
+@Serializable
+data class ScrollWrapper(
+    val creator: String? = null,
+    val comics: List<TerbaruComicDto> = emptyList(),
+    @SerialName("scroll_info") val scrollInfo: JsonElement? = null,
 )
 
 // ========== Detail (real API returns direct object, no wrapper) ==========
@@ -83,7 +186,6 @@ data class ChapterInfoDto(
     val slug: String = "",
     val href: String? = null,
     val date: String? = null,
-    // real detail chapters use "chapter" field for title
     val chapter: String? = null,
     val link: String? = null,
 ) {
@@ -95,7 +197,6 @@ data class ChapterInfoDto(
 data class MangaDetailDto(
     val title: String = "",
     val slug: String = "",
-    // real API uses "image" not thumbnail
     val image: String? = null,
     val thumbnail: String? = null,
     val type: String? = null,
@@ -133,7 +234,6 @@ data class ChapterDto(
     @SerialName("image") val image: String? = null,
     @SerialName("imageList") val imageList: List<String>? = null,
     @SerialName("chapter_images") val chapterImages: List<String>? = null,
-    // real chapter response uses manga_title/chapter_title/navigation
     @SerialName("manga_title") val mangaTitle: String? = null,
     @SerialName("chapter_title") val chapterTitle: String? = null,
     val navigation: NavigationDto? = null,
@@ -155,7 +255,6 @@ data class ChapterResponse(
     val slug: String? = null,
     val images: List<String> = emptyList(),
     val navigation: NavigationDto? = null,
-    // fallback for wrapped responses
     val data: ChapterDto? = null,
 ) {
     val effectiveImages: List<String> get() = when {
@@ -178,7 +277,6 @@ data class SearchWrapper(
     val data: List<MangaSummaryDto> = emptyList(),
 )
 
-// Legacy wrappers kept for compatibility but not used for terbaru/detail/chapter direct
 @Serializable
 data class DetailWrapper(
     val status: JsonElement? = null,

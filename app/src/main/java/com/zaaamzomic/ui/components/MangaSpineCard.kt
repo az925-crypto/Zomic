@@ -188,3 +188,29 @@ fun MangaSpineCard(
         }
     }
 }
+
+@Composable
+fun MangaSpineCardCompact(
+    title: String,
+    thumbnail: String?,
+    chapterInfo: String?,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val safeThumb = thumbnail?.takeIf { it.startsWith("https://") }
+    Column(
+        modifier = modifier.width(112.dp).clip(RoundedCornerShape(10.dp)).background(SpineMist).clickable(onClick = onClick).padding(8.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        AsyncImage(
+            model = safeThumb,
+            contentDescription = title,
+            modifier = Modifier.fillMaxWidth().height(128.dp).clip(RoundedCornerShape(8.dp)).background(SpineMist2),
+            contentScale = ContentScale.Crop,
+        )
+        Text(title, fontSize = 12.sp, fontWeight = FontWeight.Bold, lineHeight = 14.sp, maxLines = 2, overflow = TextOverflow.Ellipsis)
+        if (!chapterInfo.isNullOrBlank()) {
+            Text(chapterInfo, fontFamily = FontFamily.Monospace, fontSize = 10.sp, color = GalleyGrey, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        }
+    }
+}
