@@ -68,17 +68,17 @@ class LibraryRepository(private val dao: MangaDao) {
     }
 
     suspend fun syncPublication(slug: String, dto: MangaDetailDto) = mutex.withLock {
-        val raw = dto.status
-        val pub = parsePublication(raw, dto.description)
+        val raw = dto.effectiveStatus
+        val pub = parsePublication(raw, dto.effectiveDescription)
         val existing = dao.getBySlug(slug) ?: return@withLock
         val now = System.currentTimeMillis()
         dao.syncPublicationStatus(slug, pub, raw, now)
         if (existing.isSourceUnavailable) dao.setSourceUnavailable(slug, false, now)
-        val safeThumb = dto.thumbnail?.takeIf { it.startsWith("https://") }
-        val safeDesc = dto.description?.take(5000)
-        val needsUpdate = existing.title != dto.title || existing.thumbnail != safeThumb || existing.type != dto.type || existing.genre != dto.genre || existing.description != safeDesc || existing.publicationStatus != pub || existing.publicationRaw != raw
+        val safeThumb = dto.effectiveThumbnail?.takeIf { it.startsWith("https://") }
+        val safeDesc = dto.effectiveDescription?.take(5000)
+        val needsUpdate = existing.title != dto.title || existing.thumbnail != safeThumb || existing.type != dto.effectiveType || existing.genre != dto.effectiveGenre || existing.description != safeDesc || existing.publicationStatus != pub || existing.publicationRaw != raw
         if (needsUpdate) {
-            dao.upsert(existing.copy(title = dto.title, thumbnail = safeThumb, type = dto.type, genre = dto.genre, description = safeDesc, publicationStatus = pub, publicationRaw = raw, updatedAt = now, isSourceUnavailable = false))
+            dao.upsert(existing.copy(title = dto.title, thumbnail = safeThumb, type = dto.effectiveType, genre = dto.effectiveGenre, description = safeDesc, publicationStatus = pub, publicationRaw = raw, updatedAt = now, isSourceUnavailable = false))
         }
     }
 
@@ -123,7 +123,7 @@ class LibraryRepository(private val dao: MangaDao) {
             val lower = s.lowercase()
             return when {
                 lower.contains("belum tamat") || lower.contains("ongoing") || lower.contains("berjalan") -> PublicationStatus.BELUM_TAMAT
-                Regex("""\btamat\b""").containsMatchIn(lower) || Regex("""\bcompleted\b""").containsMatchIn(lower) || Regex("""\bfinished\b""").containsMatchIn(lower) || Regex("""\bcomplete\b""").containsMatchIn(lower) -> PublicationStatus.TAMAT
+                Regex("""\btamat\b""").containsMatchIn(lower) || Regex("""\bend\b""").containsMatchIn(lower) || Regex("""\bcompleted\b""").containsMatchIn(lower) || Regex("""\bfinished\b""").containsMatchIn(lower) || Regex("""\bcomplete\b""").containsMatchIn(lower) -> PublicationStatus.TAMAT
                 else -> PublicationStatus.UNKNOWN
             }
         }

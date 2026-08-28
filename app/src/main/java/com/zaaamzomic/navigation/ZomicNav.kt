@@ -1,6 +1,9 @@
 package com.zaaamzomic.navigation
 
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Book
 import androidx.compose.material.icons.filled.Home
@@ -8,7 +11,13 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -21,6 +30,7 @@ import com.zaaamzomic.ui.screens.LibraryScreen
 import com.zaaamzomic.ui.screens.ReaderScreen
 import com.zaaamzomic.ui.screens.SearchScreen
 import com.zaaamzomic.ui.screens.TerbaruScreen
+import com.zaaamzomic.ui.theme.*
 
 sealed class Route(val path: String) {
     object Terbaru : Route("terbaru")
@@ -49,27 +59,48 @@ fun ZomicNav(container: AppContainer) {
     val showBottom = current == Route.Terbaru.path || current == Route.Search.path || current == Route.Library.path
 
     Scaffold(
+        containerColor = PaperIvory,
         bottomBar = {
             if (showBottom) {
-                NavigationBar {
-                    NavigationBarItem(
-                        selected = current == Route.Terbaru.path,
-                        onClick = { nav.navigate(Route.Terbaru.path) { launchSingleTop = true } },
-                        icon = { Icon(Icons.Default.Home, contentDescription = null) },
-                        label = { Text("Terbaru") }
-                    )
-                    NavigationBarItem(
-                        selected = current == Route.Search.path,
-                        onClick = { nav.navigate(Route.Search.path) { launchSingleTop = true } },
-                        icon = { Icon(Icons.Default.Search, contentDescription = null) },
-                        label = { Text("Cari") }
-                    )
-                    NavigationBarItem(
-                        selected = current == Route.Library.path,
-                        onClick = { nav.navigate(Route.Library.path) { launchSingleTop = true } },
-                        icon = { Icon(Icons.Default.Book, contentDescription = null) },
-                        label = { Text("Library") }
-                    )
+                // Mockup: height 72, mist bg, rounded 20 top, shadow
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(PaperIvory)
+                        .padding(horizontal = 12.dp, vertical = 0.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(72.dp)
+                            .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
+                            .background(SpineMist)
+                            .padding(horizontal = 12.dp, vertical = 8.dp),
+                        horizontalArrangement = Arrangement.SpaceAround,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        val items = listOf(
+                            Triple(Route.Terbaru.path, "Terbaru", Icons.Default.Home),
+                            Triple(Route.Search.path, "Cari", Icons.Default.Search),
+                            Triple(Route.Library.path, "Library", Icons.Default.Book)
+                        )
+                        items.forEach { (route, label, icon) ->
+                            val active = current == route
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(999.dp))
+                                    .background(if (active) HankoBg else Color.Transparent)
+                                    .clickable { nav.navigate(route) { launchSingleTop = true } }
+                                    .padding(horizontal = 14.dp, vertical = 6.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Icon(icon, contentDescription = label, tint = if (active) Sumi else GalleyGrey, modifier = Modifier.size(20.dp))
+                                    Text(label, fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = if (active) Sumi else GalleyGrey)
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

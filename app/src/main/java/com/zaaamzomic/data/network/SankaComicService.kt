@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit
 
 interface SankaComicService {
     @GET("/comic/terbaru")
-    suspend fun getTerbaru(): SearchWrapper
+    suspend fun getTerbaru(): TerbaruWrapper
 
     @GET("/comic/populer")
     suspend fun getPopuler(): SearchWrapper
@@ -23,10 +23,10 @@ interface SankaComicService {
     suspend fun search(@Query("q") q: String): SearchWrapper
 
     @GET("/comic/comic/{slug}")
-    suspend fun getDetail(@Path("slug") slug: String): DetailWrapper
+    suspend fun getDetail(@Path("slug") slug: String): MangaDetailDto
 
     @GET("/comic/chapter/{slug}")
-    suspend fun getChapter(@Path("slug") slug: String): ChapterWrapper
+    suspend fun getChapter(@Path("slug") slug: String): ChapterResponse
 
     @GET("/comic/chapter/{slug}/navigation")
     suspend fun getChapterNavigation(@Path("slug") slug: String): ChapterWrapper
