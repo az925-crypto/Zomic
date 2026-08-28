@@ -20,7 +20,7 @@ android {
 
     signingConfigs {
         create("release") {
-            val ksPath = System.getenv("KEYSTORE_PATH")
+            val ksPath = System.getenv("KEYSTORE_PATH")?.takeIf { it.isNotBlank() }
             if (ksPath != null) {
                 storeFile = file(ksPath)
                 storePassword = System.getenv("KEYSTORE_PASSWORD")
@@ -34,7 +34,7 @@ android {
         release {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            val hasSigning = System.getenv("KEYSTORE_PATH") != null
+            val hasSigning = !System.getenv("KEYSTORE_PATH").isNullOrBlank()
             signingConfig = if (hasSigning) signingConfigs.getByName("release") else signingConfigs.getByName("debug")
         }
     }
