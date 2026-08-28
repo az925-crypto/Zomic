@@ -29,7 +29,7 @@ class ZomicApp : Application(), ImageLoaderFactory {
     override fun newImageLoader(): ImageLoader = container.imageLoader
 }
 
-class AppContainer(private val context: Context) {
+class AppContainer(val context: Context) {
     private val json = Json {
         ignoreUnknownKeys = true
         coerceInputValues = true

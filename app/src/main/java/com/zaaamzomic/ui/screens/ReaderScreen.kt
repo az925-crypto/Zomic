@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -23,6 +24,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import coil.compose.AsyncImage
+import coil.request.CachePolicy
+import coil.request.ImageRequest
 import com.zaaamzomic.AppContainer
 import com.zaaamzomic.ui.theme.*
 import kotlinx.coroutines.Job
@@ -32,6 +35,7 @@ import kotlinx.coroutines.launch
 import androidx.compose.runtime.snapshotFlow
 
 class ReaderViewModel(private val container: AppContainer, private val mangaSlug: String?, private val chapterSlug: String) : ViewModel() {
+    private val ctx = container.context
     var images by mutableStateOf<List<String>>(emptyList())
     var loading by mutableStateOf(true)
     var error by mutableStateOf<String?>(null)
@@ -66,9 +70,21 @@ class ReaderViewModel(private val container: AppContainer, private val mangaSlug
             }
         }
     }
+
+    fun preload(from: Int, count: Int = 4) {
+        val end = (from + count).coerceAtMost(images.size - 1)
+        for (i in from..end) {
+            if (i < 0 || i >= images.size) continue
+            val req = ImageRequest.Builder(ctx)
+                .data(images[i])
+                .memoryCachePolicy(CachePolicy.ENABLED)
+                .diskCachePolicy(CachePolicy.ENABLED)
+                .build()
+            container.imageLoader.enqueue(req)
+        }
+    }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReaderScreen(
     container: AppContainer,
@@ -82,110 +98,85 @@ fun ReaderScreen(
     LaunchedEffect(listState) {
         snapshotFlow { listState.firstVisibleItemIndex }.collectLatest { idx ->
             vm.onPageChanged(idx)
+            vm.preload(idx)
         }
     }
 
-    Scaffold(
-        containerColor = Sumi,
-        topBar = {
-            TopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Sumi, titleContentColor = Color.White, navigationIconContentColor = Color.White, actionIconContentColor = Color.White),
-                title = {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text((mangaSlug ?: "Manga").uppercase() + " — " + chapterSlug.uppercase(), fontFamily = FontFamily.Monospace, fontSize = 11.sp, letterSpacing = 0.8.sp, color = Color.White)
-                        val total = vm.images.size
-                        val displayPage = if (total == 0) 0 else (vm.pageIndex + 1).coerceIn(1, total)
-                        Text("P. $displayPage / $total • tap tengah untuk overlay", fontFamily = FontFamily.Monospace, fontSize = 10.sp, color = GalleyGrey2)
-                    }
-                },
-                navigationIcon = { TextButton(onClick = onBack) { Text("‹ Kembali", color = Color.White, fontSize = 12.sp) } },
-                actions = { TextButton(onClick = {}) { Text("Bookmark", color = Color.White, fontSize = 12.sp) } }
-            )
-        },
-        bottomBar = {
-            // scrub like mockup 64dp
-            Column(
-                modifier = Modifier.fillMaxWidth().background(Sumi).padding(horizontal = 16.dp, vertical = 10.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+    val total = vm.images.size
+    val displayPage = if (total == 0) 0 else (vm.pageIndex + 1).coerceIn(1, total)
+    val pct = if (total == 0) 0f else (vm.pageIndex + 1).toFloat() / total
+
+    Box(Modifier.fillMaxSize().background(Sumi)) {
+        when {
+            vm.loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator(color = Hanko2) }
+            vm.error != null -> Column(Modifier.align(Alignment.Center).padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(vm.error ?: "Error", color = Color.White)
+                Spacer(Modifier.height(12.dp))
+                Button(onClick = { vm.load() }, colors = ButtonDefaults.buttonColors(containerColor = Hanko2)) { Text("Muat Ulang Halaman", color = Color.White) }
+            }
+            else -> LazyColumn(
+                state = listState,
+                modifier = Modifier.fillMaxSize().background(Sumi),
+                contentPadding = PaddingValues(top = 44.dp, bottom = 60.dp),
+                verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
-                Box(Modifier.fillMaxWidth().height(2.dp).clip(RoundedCornerShape(999.dp)).background(SumiVariant)) {
-                    val pct = if (vm.images.isEmpty()) 0f else (vm.pageIndex + 1).toFloat() / vm.images.size
-                    Box(Modifier.fillMaxHeight().fillMaxWidth(pct.coerceIn(0f, 1f)).background(Hanko2))
+                itemsIndexed(vm.images, key = { idx, url -> "${url}_$idx" }) { idx, url ->
+                    var retryKey by remember(url) { mutableStateOf(0) }
+                    var hasError by remember(url) { mutableStateOf(false) }
+                    Box(Modifier.fillMaxWidth().background(SumiSurface)) {
+                        key(retryKey) {
+                            AsyncImage(
+                                model = ImageRequest.Builder(LocalContext.current)
+                                    .data(url)
+                                    .crossfade(true)
+                                    .memoryCachePolicy(CachePolicy.ENABLED)
+                                    .diskCachePolicy(CachePolicy.ENABLED)
+                                    .build(),
+                                contentDescription = "Hal ${idx + 1}",
+                                modifier = Modifier.fillMaxWidth(),
+                                contentScale = ContentScale.FillWidth,
+                                onError = { hasError = true },
+                                onSuccess = { hasError = false },
+                            )
+                        }
+                        if (hasError) {
+                            Box(Modifier.fillMaxWidth().height(220.dp).background(SumiSurface), contentAlignment = Alignment.Center) {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(16.dp)) {
+                                    Text("Gagal load halaman ${idx + 1}", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                                    Text("Koneksi lemah • retry per halaman", color = GalleyGrey2, fontSize = 11.sp, modifier = Modifier.padding(top = 4.dp))
+                                    Spacer(Modifier.height(10.dp))
+                                    Button(onClick = { hasError = false; retryKey++ }, colors = ButtonDefaults.buttonColors(containerColor = Hanko2), shape = RoundedCornerShape(999.dp)) { Text("Muat Ulang Halaman", color = Color.White, fontSize = 12.sp) }
+                                }
+                            }
+                        }
+                    }
                 }
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                    TextButton(onClick = {}) { Text("‹ Ch. prev", color = Hanko2, fontSize = 12.sp, fontWeight = FontWeight.Bold) }
-                    Text("P. ${if (vm.images.isEmpty()) 0 else vm.pageIndex + 1} / ${vm.images.size} • progress auto-save 500ms", fontFamily = FontFamily.Monospace, fontSize = 11.sp, color = GalleyGrey2)
-                    TextButton(onClick = {}) { Text("Ch. next ›", color = Hanko2, fontSize = 12.sp, fontWeight = FontWeight.Bold) }
-                }
-                Text("GET /comic/chapter/$chapterSlug • Coil disk 250MB • preload ±2 hal", fontFamily = FontFamily.Monospace, fontSize = 10.sp, color = Color(0xFF5A6470), modifier = Modifier.align(Alignment.CenterHorizontally))
             }
         }
-    ) { pad ->
-        Box(Modifier.padding(pad).fillMaxSize().background(Sumi)) {
-            when {
-                vm.loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator(color = Hanko2) }
-                vm.error != null -> Column(Modifier.align(Alignment.Center).padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(vm.error ?: "Error", color = Color.White)
-                    Spacer(Modifier.height(12.dp))
-                    Button(onClick = { vm.load() }, colors = ButtonDefaults.buttonColors(containerColor = Hanko2)) { Text("Muat Ulang Halaman", color = Color.White) }
-                }
-                else -> LazyColumn(state = listState, modifier = Modifier.fillMaxSize().background(Sumi), contentPadding = PaddingValues(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    itemsIndexed(vm.images, key = { idx, url -> "${url}_$idx" }) { idx, url ->
-                        var retryKey by remember(url) { mutableStateOf(0) }
-                        var hasError by remember(url) { mutableStateOf(false) }
-                        Column {
-                            Box(
-                                modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp)).background(SumiSurface).let { mod ->
-                                    if (hasError) mod.background(SumiSurface) else mod
-                                }
-                            ) {
-                                key(retryKey) {
-                                    AsyncImage(
-                                        model = coil.request.ImageRequest.Builder(androidx.compose.ui.platform.LocalContext.current)
-                                            .data(url)
-                                            .crossfade(true)
-                                            .memoryCachePolicy(coil.request.CachePolicy.ENABLED)
-                                            .diskCachePolicy(coil.request.CachePolicy.ENABLED)
-                                            .build(),
-                                        contentDescription = "Hal ${idx + 1}",
-                                        modifier = Modifier.fillMaxWidth().heightIn(min = 200.dp),
-                                        contentScale = ContentScale.FillWidth,
-                                        onError = { hasError = true },
-                                        onSuccess = { hasError = false },
-                                    )
-                                }
-                                if (hasError) {
-                                    Box(Modifier.fillMaxWidth().height(220.dp).background(SumiSurface), contentAlignment = Alignment.Center) {
-                                        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(16.dp)) {
-                                            Text("Gagal load halaman ${idx + 1}", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 12.sp)
-                                            Text("Koneksi lemah • retry per halaman", color = GalleyGrey2, fontSize = 11.sp, modifier = Modifier.padding(top = 4.dp))
-                                            Spacer(Modifier.height(10.dp))
-                                            Button(onClick = { hasError = false; retryKey++ }, colors = ButtonDefaults.buttonColors(containerColor = Hanko2), shape = RoundedCornerShape(999.dp)) { Text("Muat Ulang Halaman", color = Color.White, fontSize = 12.sp) }
-                                        }
-                                    }
-                                }
-                                if (!hasError && vm.images.isNotEmpty() && idx == 0) {
-                                    // overlay for aspect ratio hint like mockup
-                                    Box(Modifier.align(Alignment.Center)) { }
-                                }
-                            }
-                            // gutter dashed like mockup
-                            if (idx != vm.images.lastIndex) {
-                                Spacer(Modifier.height(4.dp))
-                                Box(Modifier.fillMaxWidth().padding(horizontal = 24.dp).height(1.dp).background(Color.White.copy(alpha = 0.12f)))
-                            }
-                        }
-                    }
-                    item {
-                        Spacer(Modifier.height(8.dp))
-                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
-                            Box(Modifier.weight(1f).height(1.dp).background(SumiVariant))
-                            Text(" Page Gutter — lipatan buku (dashed) ", fontFamily = FontFamily.Monospace, fontSize = 10.sp, color = GalleyGrey2)
-                            Box(Modifier.weight(1f).height(1.dp).background(SumiVariant))
-                        }
-                        Spacer(Modifier.height(16.dp))
-                    }
-                }
+        // Top overlay slim 44dp
+        Row(
+            modifier = Modifier.fillMaxWidth().background(Sumi.copy(alpha = 0.92f)).padding(horizontal = 4.dp).height(44.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            TextButton(onClick = onBack, contentPadding = PaddingValues(horizontal = 8.dp)) { Text("‹", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold) }
+            Column(Modifier.weight(1f)) {
+                Text((mangaSlug ?: "Manga").uppercase(), fontFamily = FontFamily.Monospace, fontSize = 10.sp, letterSpacing = 0.8.sp, color = Color.White, maxLines = 1)
+                Text("Ch. ${chapterSlug.substringAfterLast('-')} • P. $displayPage/$total", fontFamily = FontFamily.Monospace, fontSize = 9.sp, color = GalleyGrey2, maxLines = 1)
+            }
+            TextButton(onClick = {}, contentPadding = PaddingValues(horizontal = 8.dp)) { Text("Bookmark", color = Hanko2, fontSize = 11.sp, fontWeight = FontWeight.Bold) }
+        }
+        // Bottom scrub compact 56dp
+        Column(
+            modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth().background(Sumi.copy(alpha = 0.92f)).padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            Box(Modifier.fillMaxWidth().height(2.dp).clip(RoundedCornerShape(999.dp)).background(SumiVariant)) {
+                Box(Modifier.fillMaxHeight().fillMaxWidth(pct.coerceIn(0f, 1f)).background(Hanko2))
+            }
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                TextButton(onClick = {}, contentPadding = PaddingValues(horizontal = 4.dp)) { Text("‹ Prev", color = Hanko2, fontSize = 12.sp, fontWeight = FontWeight.Bold) }
+                Text("P. $displayPage / $total • auto-save 500ms", fontFamily = FontFamily.Monospace, fontSize = 10.sp, color = GalleyGrey2)
+                TextButton(onClick = {}, contentPadding = PaddingValues(horizontal = 4.dp)) { Text("Next ›", color = Hanko2, fontSize = 12.sp, fontWeight = FontWeight.Bold) }
             }
         }
     }
