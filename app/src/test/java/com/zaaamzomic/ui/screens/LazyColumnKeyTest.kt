@@ -150,7 +150,7 @@ class LazyColumnKeyTest {
         // Pattern: key = { idx, url -> "${url}_$idx" } or similar
         assertTrue("ReaderScreen should use itemsIndexed with url and idx", content.contains("itemsIndexed"))
         // Check key lambda includes both url and idx and $idx
-        assertTrue("ReaderScreen key must include \\$idx", content.contains("\$idx"))
+        assertTrue("ReaderScreen key must include \$idx", content.contains("\$idx"))
         // Should contain "${url}_$idx" or "\"${url}_$idx\"" or "${url}_"
         assertTrue("ReaderScreen key should combine url and index", content.contains("url") && content.contains("idx"))
         // Must NOT be old logic key = { _, url -> url }
